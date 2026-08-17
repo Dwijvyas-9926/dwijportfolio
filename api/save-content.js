@@ -3,7 +3,6 @@
 // ADMIN_HASH environment variable), stores it as the new live content.
 import { put } from "@vercel/blob";
 
-export const config = { runtime: "edge" };
 
 const MAX_BYTES = 4 * 1024 * 1024;
 
