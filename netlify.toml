@@ -1,0 +1,21 @@
+[build]
+  publish = "."
+  command = "true"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/get-content"
+  to = "/.netlify/functions/get-content"
+  status = 200
+
+[[redirects]]
+  from = "/api/save-content"
+  to = "/.netlify/functions/save-content"
+  status = 200
+
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
