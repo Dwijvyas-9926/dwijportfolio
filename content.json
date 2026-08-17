@@ -44,15 +44,6 @@
   ],
   "milestones": [
     {
-      "id": "mmsxr08q8",
-      "kind": "Recognition",
-      "when": "",
-      "title": "New entry",
-      "emphasis": "",
-      "note": "",
-      "link": null
-    },
-    {
       "id": "robofest",
       "kind": "Recognition",
       "when": "2025",
