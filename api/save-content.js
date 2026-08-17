@@ -3,7 +3,6 @@
 // ADMIN_HASH environment variable), stores it as the new live content.
 import { put } from "@vercel/blob";
 
-
 const MAX_BYTES = 4 * 1024 * 1024;
 
 function isValidShape(body) {
@@ -19,54 +18,62 @@ function isValidShape(body) {
   );
 }
 
-export default async function handler(req) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+    res.status(405).send("Method not allowed");
+    return;
   }
 
   const expected = process.env.ADMIN_HASH;
   if (!expected) {
-    return new Response(
-      "Server misconfigured: ADMIN_HASH environment variable is not set.",
-      { status: 500 }
-    );
+    res
+      .status(500)
+      .send("Server misconfigured: ADMIN_HASH environment variable is not set.");
+    return;
   }
 
-  const authHeader = req.headers.get("authorization") || "";
-  const provided = authHeader.replace(/^Bearer\s+/i, "").trim();
+  const authHeader = req.headers["authorization"] || "";
+  const provided = String(authHeader).replace(/^Bearer\s+/i, "").trim();
   if (!provided || provided.toLowerCase() !== expected.toLowerCase()) {
-    return new Response("Unauthorized", { status: 401 });
+    res.status(401).send("Unauthorized");
+    return;
   }
 
-  let body;
-  try {
-    const raw = await req.text();
-    if (raw.length > MAX_BYTES) {
-      return new Response("Payload too large", { status: 413 });
+  let body = req.body;
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      res.status(400).send("Invalid JSON");
+      return;
     }
-    body = JSON.parse(raw);
-  } catch {
-    return new Response("Invalid JSON", { status: 400 });
+  }
+
+  if (!body || typeof body !== "object") {
+    res.status(400).send("Invalid JSON");
+    return;
+  }
+
+  const raw = JSON.stringify(body);
+  if (raw.length > MAX_BYTES) {
+    res.status(413).send("Payload too large");
+    return;
   }
 
   if (!isValidShape(body)) {
-    return new Response("Content does not match expected shape", {
-      status: 422,
-    });
+    res.status(422).send("Content does not match expected shape");
+    return;
   }
 
   try {
-    await put("content.json", JSON.stringify(body), {
+    await put("content.json", raw, {
       access: "public",
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: "application/json",
     });
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    res.status(200).json({ ok: true });
   } catch (err) {
-    return new Response("Server error: " + err.message, { status: 500 });
+    res.status(500).send("Server error: " + err.message);
   }
 }
