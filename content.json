@@ -1,11 +1,11 @@
 {
   "profile": {
     "name": "Dwij Vyas",
-    "role": "Engineer \u00b7 Maker \u00b7 Student",
+    "role": "Engineer · Maker · Student",
     "discipline": "Electronics & Communication Engineering",
     "institution": "Birla Vishvakarma Mahavidyalaya",
     "location": "Vadodara, Gujarat, India",
-    "tagline": "I design <strong>hardware-software systems</strong> that turn ideas into working prototypes \u2014 from rescue drones to breadboard microprocessors.",
+    "tagline": "I design <strong>hardware-software systems</strong> that turn ideas into working prototypes — from rescue drones to breadboard microprocessors.",
     "about1": "I'm an Electronics & Communication Engineering undergraduate at BVM, working across embedded systems, digital electronics and applied AI. My work spans hardware design, firmware and the software that ties them together.",
     "about2": "I'm looking for an internship where I can do this kind of work on a real team.",
     "availability": "Open to internships in embedded systems, robotics and AI-driven hardware"
@@ -32,14 +32,14 @@
   ],
   "education": [
     {
-      "years": "'24 \u2014 now",
+      "years": "'24 — now",
       "school": "Birla Vishvakarma Mahavidyalaya",
-      "detail": "B.Tech, Electronics & Communication \u00b7 Vallabh Vidyanagar \u00b7 CPI 9.05 / 10"
+      "detail": "B.Tech, Electronics & Communication · Vallabh Vidyanagar · CPI 9.05 / 10"
     },
     {
-      "years": "'23 \u2014 '24",
+      "years": "'23 — '24",
       "school": "Bright Day School",
-      "detail": "Higher Secondary, Science \u00b7 Vadodara \u00b7 87.8%"
+      "detail": "Higher Secondary, Science · Vadodara · 87.8%"
     }
   ],
   "milestones": [
@@ -49,7 +49,7 @@
       "when": "2025",
       "title": "Robofest 5.0 Gujarat",
       "emphasis": "Finalist",
-      "note": "TerraAvis, a hybrid drone\u2013tank rescue robot, reached the state finals.",
+      "note": "TerraAvis, a hybrid drone–tank rescue robot, reached the state finals.",
       "link": null
     }
   ],
@@ -57,8 +57,8 @@
     {
       "id": "terravis",
       "title": "TerraAvis",
-      "sub": "Hybrid drone\u2013tank rescue robot",
-      "kind": "Robotics \u00b7 Embedded AI \u00b7 Pixhawk",
+      "sub": "Hybrid drone–tank rescue robot",
+      "kind": "Robotics · Embedded AI · Pixhawk",
       "desc": "An AI-enabled hybrid rescue robot with a dual-mode mobility system combining aerial navigation and tracked ground movement. Integrated thermal imaging, FPV surveillance, real-time object detection and autonomous control for search-and-rescue and disaster-response scenarios.",
       "tech": [
         "Pixhawk",
@@ -78,7 +78,7 @@
       "id": "cpu",
       "title": "4-Bit Microprocessor",
       "sub": "Built from discrete logic on breadboards",
-      "kind": "Digital electronics \u00b7 CPU design",
+      "kind": "Digital electronics · CPU design",
       "desc": "A fully functional 4-bit microprocessor built entirely from discrete 74-series logic ICs on breadboards. Complete datapath including ALU, registers, instruction register, program counter and shared bus, with a hardwired control unit and a custom instruction set supporting arithmetic, logical, load, store and conditional jump operations.",
       "tech": [
         "74-series TTL",
@@ -96,7 +96,7 @@
       "id": "chatbot",
       "title": "Friendly AI Chatbot",
       "sub": "Embedded voice assistant",
-      "kind": "Embedded hardware \u00b7 AI \u00b7 PCB design",
+      "kind": "Embedded hardware · AI · PCB design",
       "desc": "A standalone embedded AI device built around an ESP32 with real-time voice input, amplified audio output and an OLED display for feedback. Includes a custom-designed PCB and 3D-printed enclosure, with Python driving the conversational logic.",
       "tech": [
         "ESP32",
@@ -115,7 +115,7 @@
       "id": "cnc",
       "title": "Dual-Axis CNC Plotter",
       "sub": "Motion control from G-code to paper",
-      "kind": "Embedded systems \u00b7 Mechanical design",
+      "kind": "Embedded systems · Mechanical design",
       "desc": "A 2-axis CNC plotter using Arduino, stepper motors and a custom mechanical frame to translate digital designs into precise physical drawings. Implemented G-code interpretation and motion-control firmware for accurate pen positioning, combining embedded systems with mechanical design.",
       "tech": [
         "Arduino",
@@ -162,7 +162,9 @@
         "Wireless communication",
         "3D modelling",
         "CPU architecture",
-        "PCB design"
+        "PCB design",
+        "yhyh",
+        "tftyg"
       ]
     },
     {
