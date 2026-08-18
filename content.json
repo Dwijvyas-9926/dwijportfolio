@@ -70,7 +70,7 @@
         "Fusion 360"
       ],
       "link": "https://drive.google.com/drive/folders/1DYj1aq4hzN4QaE1onNEsXEsNY5stDXUG?usp=sharing",
-      "accent": "#ff9e4a",
+      "accent": "#d2b184",
       "form": "aerial",
       "images": [
         {
@@ -93,7 +93,7 @@
         "Breadboard prototyping"
       ],
       "link": "https://drive.google.com/drive/folders/1dfLMLjH02TEv6RGfnhIRi95xKUdKb2f0?usp=sharing",
-      "accent": "#7fd4e8",
+      "accent": "#d2b184",
       "form": "lattice",
       "images": []
     },
@@ -112,7 +112,7 @@
         "Arduino IDE"
       ],
       "link": "https://drive.google.com/drive/folders/1A3rikUEOEEWcZX6W_JjXLqyuPbLvr2Cd?usp=sharing",
-      "accent": "#9ff0c9",
+      "accent": "#d2b184",
       "form": "shell",
       "images": []
     },
@@ -131,7 +131,7 @@
         "Fusion 360"
       ],
       "link": null,
-      "accent": "#d8b070",
+      "accent": "#d2b184",
       "form": "gantry",
       "images": []
     }
