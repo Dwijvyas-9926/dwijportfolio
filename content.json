@@ -62,6 +62,15 @@
       "link": null
     },
     {
+      "id": "robofest6",
+      "kind": "Recognition",
+      "when": "2026",
+      "title": "ROBOFEST Gujarat 6.0 Hackathon",
+      "emphasis": "Finalist",
+      "note": "AVION, our autonomous disaster-relief delivery drone, reached the finals of India's biggest robotics hackathon, organised by GUJCOST at RAC Bhavnagar.",
+      "link": "https://github.com/Dwijvyas-9926/AVION"
+    },
+    {
       "id": "robofest",
       "kind": "Recognition",
       "when": "2025",
