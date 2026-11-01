@@ -555,6 +555,17 @@ body.reduced .stratum::before{ transform:scaleY(1) }
 
 /* ══ INSPECTOR ABOVE EVERYTHING ══════════════════════════ */
 .inspect{ z-index:14 }
+/* Long projects scroll inside the panel. The body (not .inspect itself) is the
+   scroller so the close tab, which sits outside the panel edge, is not clipped.
+   Short content stays centred; overscroll does not leak into the world scroll. */
+.inspect__body{
+  flex:0 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+  margin-right:calc(var(--gutter)*-.6); padding-right:calc(var(--gutter)*.6);
+  scrollbar-width:thin; scrollbar-color:rgba(236,231,238,.22) transparent;
+}
+.inspect__body::-webkit-scrollbar{ width:6px }
+.inspect__body::-webkit-scrollbar-thumb{ background:rgba(236,231,238,.22); border-radius:3px }
+.inspect__body::-webkit-scrollbar-track{ background:transparent }
 body.inspecting a.resume--fixed, body.inspecting .resume--fixed{
   opacity:0 !important; pointer-events:none;
   transition:opacity .45s ease;
