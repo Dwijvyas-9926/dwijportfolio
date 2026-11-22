@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /admin
+
+Sitemap: https://dwijportfolio-kappa.vercel.app/sitemap.xml

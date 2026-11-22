@@ -162,7 +162,6 @@
         <small>${esc(K[c.id] || K[c.icon] || c.id || '')}</small>
         <span>${esc(/^https?:/i.test(c.href) && /linkedin|github/i.test(c.href) ? c.href.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, '') : c.label)}</span>
       </a>`).join(''));
-    try { if (typeof uf === 'function') uf(C); } catch (e) { /* the static PDF link stays */ }
   }
 
   // ── behaviour ────────────────────────────────────────────────────────

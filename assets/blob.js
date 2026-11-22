@@ -17,7 +17,11 @@
 
   const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const FS = `#extension GL_OES_standard_derivatives : enable
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
   precision highp float;
+  #else
+  precision mediump float;
+  #endif
   uniform vec2 uRes;
   uniform float uTime, uIntro, uWarp, uFreq, uR;
   uniform vec3 uB[${N}];
@@ -91,7 +95,10 @@
 
   const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o);
     if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
-  gl.getExtension('OES_standard_derivatives');
+  if (!gl.getExtension('OES_standard_derivatives')) return;   // no fwidth: leave the hero without the blob
+  // low-power hint: fewer cores or little memory start at 1x resolution
+  const lowPower = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+  canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); running = false; dead = true; canvas.style.opacity = '0'; });
   let prog;
   try {
     prog = gl.createProgram();
@@ -109,9 +116,10 @@
   gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
   let W = 1, H = 1, dpr = 1, home = { x: 0, y: 0 }, R = 100;
+  let running = false, visible = true, degraded = false, still = false, dead = false;
   function resize() {
     const r = canvas.getBoundingClientRect();
-    dpr = Math.min(devicePixelRatio || 1, 1.5);
+    dpr = Math.min(devicePixelRatio || 1, lowPower || degraded ? 1 : 1.5);
     W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr));
     canvas.width = W; canvas.height = H; gl.viewport(0, 0, W, H);
     const narrow = r.width < 800;
@@ -167,10 +175,24 @@
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
-  let running = false, visible = true;
-  const loop = now => { if (!running) return; draw(now); requestAnimationFrame(loop); };
+  // adaptive quality: if frames run slow, drop to 1x; if still slow, settle on a still frame
+  let last = 0, slow = 0, frames = 0, total = 0, bad = 0;
+  function watch(now) {
+    const dt = last ? now - last : 16; last = now;
+    if (document.hidden || dt > 250 || now - t0 < 2000) return;   // ignore tab switches and the load warm-up
+    frames++; total += dt; if (dt > 28) slow++;
+    if (frames >= 45) {
+      const avg = total / frames;
+      bad = slow > 30 ? bad + 1 : 0;
+      if (avg > 80 || (bad >= 2 && degraded)) { still = true; running = false; draw(performance.now()); }   // cannot keep up: hold still
+      else if (bad >= 2) { degraded = true; bad = 0; resize(); }                                             // struggling: drop to 1x
+      frames = slow = 0; total = 0;
+    }
+  }
+  const loop = now => { if (!running) return; draw(now); watch(now); requestAnimationFrame(loop); };
   const update = () => {
-    const on = visible && !document.hidden && !reduced;
+    const on = visible && !document.hidden && !reduced && !still && !dead;
+    if (on && !running) last = 0;
     if (on && !running) { running = true; requestAnimationFrame(loop); } else if (!on) running = false;
   };
   new IntersectionObserver(([en]) => { visible = en.isIntersecting; update(); }).observe(hero);

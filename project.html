@@ -7,10 +7,12 @@
 <meta name="description" content="A project case study by Dwij Vyas, Electronics &amp; Communication Engineering.">
 <meta name="author" content="Dwij Vyas">
 <meta name="theme-color" content="#F3F2EF">
+<link rel="canonical" href="https://dwijportfolio-kappa.vercel.app/project">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://dwijportfolio-kappa.vercel.app/project">
 <meta property="og:title" content="Project — Dwij Vyas">
 <meta property="og:description" content="A project case study by Dwij Vyas, Electronics &amp; Communication Engineering.">
-<meta property="og:image" content="./og-image.jpg">
+<meta property="og:image" content="https://dwijportfolio-kappa.vercel.app/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Dwij Vyas — engineering portfolio">
@@ -19,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Project — Dwij Vyas">
 <meta name="twitter:description" content="A project case study by Dwij Vyas, Electronics &amp; Communication Engineering.">
-<meta name="twitter:image" content="./og-image.jpg">
+<meta name="twitter:image" content="https://dwijportfolio-kappa.vercel.app/og-image.jpg">
 <link rel="apple-touch-icon" href="./assets/avatar.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
 <link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -70,7 +72,6 @@
   </article>
 </main>
 <script src="./vendor/lenis/lenis.min.js"></script>
-<script src="./assets/resume-gen.js"></script>
 <script src="./assets/site.js"></script>
 <script>
 Site.ready(C => {
@@ -84,7 +85,16 @@ Site.ready(C => {
   }
   const x = ps[i], imgs = x.images || [];
   document.title = `${x.title} — Dwij Vyas`;
-  const md = document.querySelector('meta[name="description"]'); if (md) md.content = `${x.title}: ${x.sub}. ${String(x.desc || '').slice(0, 140)}`;
+  const desc = `${x.title}: ${x.sub}. ${String(x.desc || '').slice(0, 140)}`;
+  const setMeta = (sel, attr, v) => { const el = document.querySelector(sel); if (el) el.setAttribute(attr, v); };
+  const url = `${location.origin}/project?p=${encodeURIComponent(x.id)}`;
+  setMeta('meta[name="description"]', 'content', desc);
+  setMeta('link[rel="canonical"]', 'href', url);
+  setMeta('meta[property="og:url"]', 'content', url);
+  setMeta('meta[property="og:title"]', 'content', `${x.title} — Dwij Vyas`);
+  setMeta('meta[property="og:description"]', 'content', desc);
+  setMeta('meta[name="twitter:title"]', 'content', `${x.title} — Dwij Vyas`);
+  setMeta('meta[name="twitter:description"]', 'content', desc);
   bind('crumb', esc(x.title));
   bind('title', `<span class="line"><span>${esc(x.title)}</span></span>`);
   bind('sub', esc(x.sub));

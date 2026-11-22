@@ -16,7 +16,8 @@
 
   function scope(cv) {
     const ctx = cv.getContext('2d');
-    let W = 0, H = 0, dpr = 1, running = false, visible = false;
+    let W = 0, H = 0, dpr = 1, running = false, visible = false, still = false;
+    let last = 0, slow = 0, frames = 0;
     const t0 = performance.now();
     const follow = cv.dataset.follow === 'pointer';
     const ptr = { fc: null, depth: null };
@@ -97,9 +98,17 @@
       cv.dispatchEvent(new CustomEvent('scope:measure', { detail: { mod, fc: fcNow, depth: depthNow, fm } }));
     }
 
-    const loop = now => { if (!running) return; draw(now); requestAnimationFrame(loop); };
+    // if this device cannot keep up, hold a still frame instead of stuttering
+    const watch = now => {
+      const dt = last ? now - last : 16; last = now;
+      if (document.hidden || dt > 250 || now - t0 < 2000) return;
+      frames++; if (dt > 34) slow++;
+      if (frames >= 60) { if (slow > 40) { still = true; running = false; } frames = slow = 0; }
+    };
+    const loop = now => { if (!running) return; draw(now); watch(now); requestAnimationFrame(loop); };
     const update = () => {
-      const on = visible && !document.hidden && !reduced;
+      const on = visible && !document.hidden && !reduced && !still;
+      if (on && !running) last = 0;
       if (on && !running) { running = true; requestAnimationFrame(loop); } else if (!on) running = false;
     };
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; update(); }).observe(cv);
