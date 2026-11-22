@@ -346,22 +346,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 @media (max-width:700px){.rows>div{grid-template-columns:1fr;gap:var(--s2)}}
 
 /* ── contact block (every page) ─────────────────────────── */
-.contact{position:relative;margin-top:var(--sect);background:var(--ink);color:#fff;padding-top:clamp(96px,12vw,152px);overflow:hidden}
+.contact{position:relative;margin-top:var(--sect);color:#fff;padding-top:clamp(96px,12vw,152px);overflow:hidden;
+  background:radial-gradient(900px circle at 100% 70%,rgba(142,221,208,.2) 0%,rgba(142,221,208,.06) 45%,transparent 70%),
+             radial-gradient(700px circle at 0% 0%,rgba(246,184,200,.09) 0%,transparent 65%),var(--ink)}
 .contact>.wrap,.contact>.wordmark{position:relative;z-index:1}
-/* data lanes: teal packets with a few pink and one orange, clear behind the heading */
-.lanes{position:absolute;left:0;right:0;top:clamp(64px,8vw,104px);height:clamp(190px,19vw,280px);display:flex;flex-direction:column;justify-content:space-between;
-  pointer-events:none;-webkit-mask-image:radial-gradient(ellipse 38% 80% at 50% 50%,transparent 0%,transparent 60%,#000 100%);
-  mask-image:radial-gradient(ellipse 38% 80% at 50% 50%,transparent 0%,transparent 60%,#000 100%)}
-.lane{overflow:hidden;height:10px}
-.lane__run{display:flex;width:max-content;animation:lane var(--d) linear infinite;animation-direction:var(--dir)}
-.lane i{display:block;height:10px;border-radius:999px;flex:none;opacity:.9}
-.lane i.t{background:#8EDDD0}
-.lane i.p{background:#F6B8C8}
-.lane i.o{background:var(--accent)}
-.lane:nth-child(3n+2) i{opacity:.55}
-.lane:nth-child(4n+3) i{height:6px;margin-top:2px}
-@keyframes lane{to{transform:translateX(-50%)}}
-@media (max-width:800px){.lanes{top:28px;height:64px;-webkit-mask-image:none;mask-image:none}.lanes .lane:nth-child(n+5){display:none}}
 .contact__h{font:600 clamp(60px,9vw,150px)/.86 var(--cond);letter-spacing:-.015em;text-align:center}
 .contact__intro{margin:var(--s3) auto 0;font-size:19px;color:rgba(255,255,255,.7);max-width:30em;text-align:center}
 .contact__cta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:var(--s5)}

@@ -111,29 +111,9 @@
       </div>
     </header>`;
   }
-  // data lanes behind the contact heading: rows of rounded packets travelling at different speeds.
-  // Deterministic, so every page draws the same pattern.
-  function lanes() {
-    let seed = 7;
-    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    const rows = [];
-    for (let r = 0; r < 9; r++) {
-      let html = '';
-      for (let k = 0; k < 14; k++) {
-        const w = 40 + Math.round(rnd() * 180), gap = 18 + Math.round(rnd() * 70);
-        const q = rnd(), c = q < 0.06 ? 'o' : q < 0.26 ? 'p' : 't';
-        html += `<i class="${c}" style="width:${w}px;margin-right:${gap}px"></i>`;
-      }
-      const dur = 26 + Math.round(rnd() * 30), dir = r % 2 ? 'reverse' : 'normal';
-      rows.push(`<div class="lane" style="--d:${dur}s;--dir:${dir}"><div class="lane__run">${html}${html}</div></div>`);
-    }
-    return `<div class="lanes" aria-hidden="true">${rows.join('')}</div>`;
-  }
-
   function contactBlock() {
     return `
     <section class="contact" id="contact" aria-labelledby="contact-h">
-      ${lanes()}
       <div class="wrap">
         <h2 class="contact__h rv" id="contact-h"><span class="line"><span>Let’s build</span></span><span class="line"><span>something real.</span></span></h2>
         <p class="contact__intro" data-bind="contactIntro"></p>
