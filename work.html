@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Work — Dwij Vyas</title>
+<meta name="description" content="Projects by Dwij Vyas across robotics, embedded systems, digital logic and applied AI: autonomous drones, a hybrid rescue robot, a breadboard 4-bit CPU and more.">
+<meta name="author" content="Dwij Vyas">
+<meta name="theme-color" content="#F3F2EF">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Work — Dwij Vyas">
+<meta property="og:description" content="Projects by Dwij Vyas across robotics, embedded systems, digital logic and applied AI: autonomous drones, a hybrid rescue robot, a breadboard 4-bit CPU and more.">
+<meta property="og:image" content="./og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Dwij Vyas — engineering portfolio">
+<meta property="og:site_name" content="Dwij Vyas">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Work — Dwij Vyas">
+<meta name="twitter:description" content="Projects by Dwij Vyas across robotics, embedded systems, digital logic and applied AI: autonomous drones, a hybrid rescue robot, a breadboard 4-bit CPU and more.">
+<meta name="twitter:image" content="./og-image.jpg">
+<link rel="apple-touch-icon" href="./assets/avatar.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
+<link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="./vendor/lenis/lenis.css">
+<link rel="stylesheet" href="./assets/site.css">
+<!-- ══════════════════════════════════════════════════════════════════
+     CLOUD SYNC — optional. Leave blank and everything works locally.
+     Fill these in to edit from any device and publish instantly.
+     Setup takes about five minutes; see DEPLOY.md.
+     The key below is a *public* anon key by design — your row-level
+     security policy is what protects writes, not this string.
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+  window.PORTFOLIO_CLOUD = {
+    url: "",   // e.g. "https://abcdefgh.supabase.co"
+    key: ""    // the project's anon / publishable key
+  };
+</script>
+</head>
+<body data-page="work">
+<main id="main">
+  <header class="phead">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><span aria-current="page">Work</span></nav>
+      <h1 class="rv"><span class="line"><span>Work</span></span></h1>
+      <p class="phead__lede" data-bind="lede"></p>
+    </div>
+  </header>
+  <section aria-labelledby="pr-h">
+    <div class="wrap">
+      <h2 class="sr" id="pr-h">Projects</h2>
+      <div class="filters" role="group" aria-label="Filter by discipline" data-bind="filters"></div>
+      <div class="pgrid" data-bind="grid" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+<script src="./vendor/lenis/lenis.min.js"></script>
+<script src="./assets/resume-gen.js"></script>
+<script src="./assets/site.js"></script>
+<script>
+Site.ready(C => {
+  const { $, $$, esc, bind, card, projects, disciplinesOf, DISCIPLINES, observe } = Site;
+  const ps = projects();
+  const present = DISCIPLINES.map(([n]) => [n, ps.filter(p => disciplinesOf(p).includes(n)).length]).filter(([, k]) => k);
+  bind('lede', esc(`${ps.length} projects, each taken from an idea to a working prototype. Filter by discipline, or select a project for the full case study.`));
+  bind('filters', `<button aria-pressed="true" data-f="">All<sup>${ps.length}</sup></button>` +
+    present.map(([n, k]) => `<button aria-pressed="false" data-f="${esc(n)}">${esc(n)}<sup>${k}</sup></button>`).join(''));
+  bind('grid', ps.map(x => card(x)).join(''));
+  const fb = $('[data-bind="filters"]');
+  const apply = f => {
+    $$('button', fb).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === f)));
+    $$('.pcard').forEach(c => c.classList.toggle('is-out', !!f && !c.dataset.d.split('|').includes(f)));
+    const u = new URL(location.href); f ? u.searchParams.set('d', f) : u.searchParams.delete('d'); history.replaceState(null, '', u);
+  };
+  fb.addEventListener('click', e => { const b = e.target.closest('button'); if (b) apply(b.dataset.f); });
+  const start = new URLSearchParams(location.search).get('d');
+  if (start && present.some(([n]) => n === start)) apply(start);
+  observe();
+});
+</script>
+</body>
+</html>

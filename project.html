@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project — Dwij Vyas</title>
+<meta name="description" content="A project case study by Dwij Vyas, Electronics &amp; Communication Engineering.">
+<meta name="author" content="Dwij Vyas">
+<meta name="theme-color" content="#F3F2EF">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Project — Dwij Vyas">
+<meta property="og:description" content="A project case study by Dwij Vyas, Electronics &amp; Communication Engineering.">
+<meta property="og:image" content="./og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Dwij Vyas — engineering portfolio">
+<meta property="og:site_name" content="Dwij Vyas">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Project — Dwij Vyas">
+<meta name="twitter:description" content="A project case study by Dwij Vyas, Electronics &amp; Communication Engineering.">
+<meta name="twitter:image" content="./og-image.jpg">
+<link rel="apple-touch-icon" href="./assets/avatar.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
+<link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="./vendor/lenis/lenis.css">
+<link rel="stylesheet" href="./assets/site.css">
+<!-- ══════════════════════════════════════════════════════════════════
+     CLOUD SYNC — optional. Leave blank and everything works locally.
+     Fill these in to edit from any device and publish instantly.
+     Setup takes about five minutes; see DEPLOY.md.
+     The key below is a *public* anon key by design — your row-level
+     security policy is what protects writes, not this string.
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+  window.PORTFOLIO_CLOUD = {
+    url: "",   // e.g. "https://abcdefgh.supabase.co"
+    key: ""    // the project's anon / publishable key
+  };
+</script>
+</head>
+<body data-page="project">
+<main id="main">
+  <article id="case">
+    <header class="phead">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><a href="./work.html">Work</a><span aria-hidden="true">/</span><span aria-current="page" data-bind="crumb"></span></nav>
+        <div class="case__head">
+          <div>
+            <h1 class="rv" data-bind="title"></h1>
+            <p class="case__sub" data-bind="sub"></p>
+          </div>
+          <div class="case__tags" data-bind="tags"></div>
+        </div>
+        <div data-bind="cover"></div>
+      </div>
+    </header>
+    <div class="wrap">
+      <div class="case__body">
+        <section aria-labelledby="ov-h">
+          <h2 id="ov-h">Overview</h2>
+          <p class="case__desc" data-bind="desc"></p>
+        </section>
+        <aside aria-label="Project details"><dl class="spec" data-bind="spec"></dl></aside>
+      </div>
+      <section class="case__gallery" data-bind="gallery" aria-labelledby="gal-h"></section>
+      <nav class="pager" data-bind="pager" aria-label="More projects"></nav>
+    </div>
+  </article>
+</main>
+<script src="./vendor/lenis/lenis.min.js"></script>
+<script src="./assets/resume-gen.js"></script>
+<script src="./assets/site.js"></script>
+<script>
+Site.ready(C => {
+  const { $, esc, bind, splitKind, linkLabel, ext, projectUrl, projects, resultFor, lbOpen, observe, ARROW } = Site;
+  const ps = projects();
+  const id = new URLSearchParams(location.search).get('p') || (/^#project\/(.+)$/.exec(location.hash) || [])[1];
+  const i = ps.findIndex(x => x.id === id);
+  if (i < 0) {
+    $('#case').innerHTML = `<div class="wrap notfound phead"><h1>Project not found</h1><p class="phead__lede">That link doesn’t match a project. <a class="link" href="./work.html">See all work</a></p></div>`;
+    return;
+  }
+  const x = ps[i], imgs = x.images || [];
+  document.title = `${x.title} — Dwij Vyas`;
+  const md = document.querySelector('meta[name="description"]'); if (md) md.content = `${x.title}: ${x.sub}. ${String(x.desc || '').slice(0, 140)}`;
+  bind('crumb', esc(x.title));
+  bind('title', `<span class="line"><span>${esc(x.title)}</span></span>`);
+  bind('sub', esc(x.sub));
+  bind('tags', splitKind(x.kind).map(k => `<span class="tag">${esc(k)}</span>`).join(''));
+  bind('cover', imgs[0] ? `<button class="case__cover" data-i="0" aria-label="Enlarge image: ${esc(imgs[0].caption || x.title)}"><img src="${imgs[0].src}" alt="${esc(imgs[0].caption || x.title)}"></button>` : '');
+  bind('desc', esc(x.desc));
+  const res = resultFor(x), tech = x.tech || [];
+  bind('spec', [
+    x.kind && `<div><dt>Discipline</dt><dd>${esc(splitKind(x.kind).join(', '))}</dd></div>`,
+    tech.length && `<div><dt>Built with</dt><dd><ul>${tech.map(t => `<li>${esc(t)}</li>`).join('')}</ul></dd></div>`,
+    res && `<div><dt>Result</dt><dd>${esc(res)}</dd></div>`,
+    x.link && `<div><dt>Link</dt><dd><a class="btn btn--primary" href="${esc(x.link)}"${ext(x.link)}>${linkLabel(x.link)}</a></dd></div>`,
+  ].filter(Boolean).join(''));
+  const rest = imgs.slice(1);
+  const gal = bind('gallery', rest.length ? `<h2 id="gal-h">Gallery</h2><div class="gal">${rest.map((im, k) => `
+    <figure class="fade"><button data-i="${k + 1}" aria-label="Enlarge image ${k + 2}"><img src="${im.src}" alt="${esc(im.caption || x.title + ', image ' + (k + 2))}" loading="lazy" decoding="async"></button>
+    ${im.caption ? `<figcaption>${esc(im.caption)}</figcaption>` : ''}</figure>`).join('')}</div>` : '');
+  if (!rest.length && gal) gal.hidden = true;
+  document.addEventListener('click', e => { const b = e.target.closest('#case [data-i]'); if (b) lbOpen(imgs, +b.dataset.i); });
+  if (ps.length > 1) {
+    const prev = ps[(i - 1 + ps.length) % ps.length], next = ps[(i + 1) % ps.length];
+    const pi = p => (p.images || [])[0] ? `<img src="${p.images[0].src}" alt="" loading="lazy">` : '<img alt="">';
+    bind('pager', `<a href="${projectUrl(prev.id)}">${pi(prev)}<span><small>Previous project</small><span>${esc(prev.title)}</span></span></a>
+      <a href="${projectUrl(next.id)}"><span><small>Next project</small><span>${esc(next.title)}</span></span>${pi(next)}</a>`);
+  }
+  observe();
+});
+</script>
+</body>
+</html>
