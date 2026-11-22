@@ -229,6 +229,20 @@
     });
   }
 
+  // background videos: load when near, play only while visible; poster only for reduced motion or data saver
+  function videos() {
+    const save = navigator.connection && navigator.connection.saveData;
+    $$('video[data-src]').forEach(v => {
+      if (reduced || save) return;
+      new IntersectionObserver(([en]) => {
+        if (en.isIntersecting) {
+          if (!v.src) { v.src = v.dataset.src; v.load(); }
+          const pl = v.play(); if (pl && pl.catch) pl.catch(() => {});
+        } else if (v.src) v.pause();
+      }, { rootMargin: '200px 0px' }).observe(v);
+    });
+  }
+
   // live local time
   function clocks() {
     const els = $$('[data-clock]');
@@ -285,7 +299,7 @@
     C = c; loaded = true;
     renderChrome();
     waiting.forEach(fn => { try { fn(C); } catch (e) { console.error(e); } });
-    observe(); magnetic(); clocks();
+    observe(); magnetic(); clocks(); videos();
     if (draft) {
       const d = document.createElement('p'); d.className = 'draft';
       d.textContent = 'Showing your unpublished draft from the editor';

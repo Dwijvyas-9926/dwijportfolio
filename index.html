@@ -25,6 +25,7 @@
 <link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/portrait-hero.webp" as="image" fetchpriority="high">
+<link rel="preload" href="./fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="./vendor/lenis/lenis.css">
 <link rel="stylesheet" href="./assets/site.css">
 <script type="application/ld+json">
@@ -67,7 +68,7 @@
     <canvas id="blob" aria-hidden="true"></canvas>
     <h1 class="hero__name" id="name" data-bind="name">Dwij Vyas</h1>
     <figure class="hero__portrait" id="heroPortrait">
-      <img src="./assets/portrait-hero.webp" width="1125" height="1231" alt="Dwij Vyas" fetchpriority="high" decoding="async">
+      <img src="./assets/portrait-hero.webp" width="1123" height="1230" alt="Dwij Vyas" fetchpriority="high" decoding="async">
     </figure>
     <div class="hero__meta hero__meta--l"><p><b data-bind="discipline">Electronics &amp; Communication Engineering</b><span data-bind="institution"></span></p></div>
     <div class="hero__meta hero__meta--r"><p><b data-bind="location">Vadodara, India</b><span><span data-clock></span> local time</span></p></div>
@@ -94,7 +95,41 @@
           <a class="link" href="./about.html">More about me</a>
         </div>
       </div>
-      <div class="stats" data-bind="stats"></div>
+      <div class="panel" data-lab>
+        <div class="lab">
+          <div class="lab__side">
+            <p class="lab__k">Signal lab</p>
+            <h2 class="lab__t">A working modulator</h2>
+            <p class="lab__d">Communication engineering on one screen. Pick a scheme and tune it: CH2 is the message, CH1 is the signal that would leave the antenna.</p>
+            <div class="seg" role="group" aria-label="Modulation scheme">
+              <button data-mod="am" aria-pressed="true">AM</button><button data-mod="fm" aria-pressed="false">FM</button><button data-mod="psk" aria-pressed="false">PSK</button>
+            </div>
+            <label class="ctl"><span>Carrier</span><input type="range" data-ctl="fc" min="6" max="26" step="0.5" value="12"></label>
+            <label class="ctl"><span>Depth</span><input type="range" data-ctl="depth" min="0.1" max="1" step="0.05" value="0.6"></label>
+            <dl class="lab__read">
+              <div><dt>Carrier</dt><dd data-out="fc">12.0 kHz</dd></div>
+              <div><dt>Index</dt><dd data-out="idx">μ = 0.60</dd></div>
+              <div><dt>Bandwidth</dt><dd data-out="bw">3.2 kHz</dd></div>
+            </dl>
+          </div>
+          <canvas class="lab__scope" data-scope data-mod="am" data-fc="12" data-depth="0.6" data-top="24" role="img" aria-label="Oscilloscope: the message signal and the modulated carrier"></canvas>
+        </div>
+        <div class="stats" data-bind="stats"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="vb-h">
+    <div class="wrap">
+      <div class="vband">
+        <!-- Footage: Mixkit, free licence (mixkit.co/license) -->
+        <video class="vbg" data-src="./assets/video/circuit.mp4" poster="./assets/video/circuit.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
+        <div class="vband__in">
+          <h2 class="rv" id="vb-h"><span class="line"><span>From schematic to</span></span><span class="line"><span>working hardware.</span></span></h2>
+          <p data-bind="vbandLede">Every project here was designed, built and tested by hand.</p>
+          <a class="btn btn--light" href="./work.html" data-magnetic>See all work</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -113,6 +148,7 @@
 <script src="./assets/resume-gen.js"></script>
 <script src="./assets/site.js"></script>
 <script src="./assets/blob.js" defer></script>
+<script src="./assets/scope.js" defer></script>
 <script>
 // Old single-page links (#project/avion) now have their own pages.
 (function () {
@@ -124,7 +160,8 @@ Site.ready(C => {
   const p = C.profile || {};
   const name = String(p.name || '').trim();
   let i = 0;
-  bind('name', name.split(/\s+/).map(w => `<span class="ln">${[...w].map(ch => `<span class="ch" style="--i:${i++}">${esc(ch)}</span>`).join('')}</span>`).join(''));
+  const nameWords = name.split(/\s+/);
+  bind('name', nameWords.map((w, k) => `<span class="ln">${[...w].map(ch => `<span class="ch" style="--i:${i++}">${esc(ch)}</span>`).join('')}${k === nameWords.length - 1 ? `<span class="ch dot" style="--i:${i++}" aria-hidden="true">.</span>` : ''}</span>`).join(''));
   bind('discipline', esc(p.discipline || ''));
   bind('institution', esc(p.institution || ''));
   bind('location', esc(String(p.location || '').split(',').filter((s, k, a) => k === 0 || k === a.length - 1).join(',')));
@@ -173,6 +210,7 @@ Site.ready(C => {
   bind('workMeta', `Three of ${ps.length} projects`);
   bind('featured', ps.slice(0, 3).map((x, k) => card(x, { wide: k === 0 })).join(''));
   bind('allBtn', `View all ${ps.length} projects`);
+  bind('vbandLede', esc(`${ps.length} systems so far, each one designed, built and tested by hand.`));
 
   // statement words fill in as you read; the hero has depth on scroll
   const stage = $('#top'), heroName = $('#name'), heroImg = $('#heroPortrait'), heroFoot = $('#heroFoot'), st = $('#statement');
