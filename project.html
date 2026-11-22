@@ -74,7 +74,7 @@
 <script src="./assets/site.js"></script>
 <script>
 Site.ready(C => {
-  const { $, esc, bind, splitKind, linkLabel, ext, projectUrl, projects, resultFor, lbOpen, observe, ARROW } = Site;
+  const { $, esc, bind, splitKind, linkLabel, ext, projectUrl, projects, resultFor, yearFor, lbOpen, observe, ARROW } = Site;
   const ps = projects();
   const id = new URLSearchParams(location.search).get('p') || (/^#project\/(.+)$/.exec(location.hash) || [])[1];
   const i = ps.findIndex(x => x.id === id);
@@ -88,11 +88,13 @@ Site.ready(C => {
   bind('crumb', esc(x.title));
   bind('title', `<span class="line"><span>${esc(x.title)}</span></span>`);
   bind('sub', esc(x.sub));
-  bind('tags', splitKind(x.kind).map(k => `<span class="tag">${esc(k)}</span>`).join(''));
+  const yr = yearFor(x);
+  bind('tags', (yr ? `<span class="tag">${esc(yr)}</span>` : '') + splitKind(x.kind).map(k => `<span class="tag">${esc(k)}</span>`).join(''));
   bind('cover', imgs[0] ? `<button class="case__cover" data-i="0" aria-label="Enlarge image: ${esc(imgs[0].caption || x.title)}"><img src="${imgs[0].src}" alt="${esc(imgs[0].caption || x.title)}"></button>` : '');
   bind('desc', esc(x.desc));
   const res = resultFor(x), tech = x.tech || [];
   bind('spec', [
+    yr && `<div><dt>Year</dt><dd>${esc(yr)}</dd></div>`,
     x.kind && `<div><dt>Discipline</dt><dd>${esc(splitKind(x.kind).join(', '))}</dd></div>`,
     tech.length && `<div><dt>Built with</dt><dd><ul>${tech.map(t => `<li>${esc(t)}</li>`).join('')}</ul></dd></div>`,
     res && `<div><dt>Result</dt><dd>${esc(res)}</dd></div>`,

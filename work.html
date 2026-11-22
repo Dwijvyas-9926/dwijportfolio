@@ -52,8 +52,14 @@
   <section aria-labelledby="pr-h">
     <div class="wrap">
       <h2 class="sr" id="pr-h">Projects</h2>
-      <div class="filters" role="group" aria-label="Filter by discipline" data-bind="filters"></div>
-      <div class="pgrid" data-bind="grid" aria-live="polite"></div>
+      <div class="toolbar">
+        <div class="filters" role="group" aria-label="Filter by discipline" data-bind="filters"></div>
+        <div class="views" role="group" aria-label="View">
+          <button aria-pressed="true" data-v="grid">Grid</button><button aria-pressed="false" data-v="index">Index</button>
+        </div>
+      </div>
+      <div class="pgrid" data-bind="grid"></div>
+      <table class="index" data-bind="index" hidden></table>
     </div>
   </section>
 </main>
@@ -62,17 +68,32 @@
 <script src="./assets/site.js"></script>
 <script>
 Site.ready(C => {
-  const { $, $$, esc, bind, card, projects, disciplinesOf, DISCIPLINES, observe } = Site;
+  const { $, $$, esc, bind, card, projects, disciplinesOf, DISCIPLINES, observe, splitKind, resultFor, yearFor, projectUrl } = Site;
   const ps = projects();
   const present = DISCIPLINES.map(([n]) => [n, ps.filter(p => disciplinesOf(p).includes(n)).length]).filter(([, k]) => k);
   bind('lede', esc(`${ps.length} projects, each taken from an idea to a working prototype. Filter by discipline, or select a project for the full case study.`));
   bind('filters', `<button aria-pressed="true" data-f="">All<sup>${ps.length}</sup></button>` +
     present.map(([n, k]) => `<button aria-pressed="false" data-f="${esc(n)}">${esc(n)}<sup>${k}</sup></button>`).join(''));
   bind('grid', ps.map(x => card(x)).join(''));
+  bind('index', `<thead><tr><th scope="col">Project</th><th scope="col" class="hide-s">Discipline</th><th scope="col">Year</th><th scope="col" class="hide-s">Result</th></tr></thead><tbody>` +
+    ps.map(x => `<tr class="row" data-d="${esc(disciplinesOf(x).join('|'))}" data-href="${projectUrl(x.id)}">
+      <td>${(x.images || [])[0] ? `<img src="${x.images[0].src}" alt="" loading="lazy">` : ''}<span><a href="${projectUrl(x.id)}">${esc(x.title)}</a><small>${esc(x.sub)}</small></span></td>
+      <td class="hide-s">${esc(splitKind(x.kind).slice(0, 2).join(', '))}</td>
+      <td class="yr">${esc(yearFor(x) || '—')}</td>
+      <td class="hide-s">${esc(resultFor(x) || '—')}</td></tr>`).join('') + '</tbody>');
+  $('[data-bind="index"]').addEventListener('click', e => { const r = e.target.closest('tr.row'); if (r && !e.target.closest('a')) location.href = r.dataset.href; });
+  const grid = $('[data-bind="grid"]'), table = $('[data-bind="index"]');
+  const setView = v => {
+    $$('.views button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+    grid.hidden = v === 'index'; table.hidden = v !== 'index';
+    const u = new URL(location.href); v === 'index' ? u.searchParams.set('view', 'index') : u.searchParams.delete('view'); history.replaceState(null, '', u);
+  };
+  $('.views').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setView(b.dataset.v); });
+  if (new URLSearchParams(location.search).get('view') === 'index') setView('index');
   const fb = $('[data-bind="filters"]');
   const apply = f => {
     $$('button', fb).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === f)));
-    $$('.pcard').forEach(c => c.classList.toggle('is-out', !!f && !c.dataset.d.split('|').includes(f)));
+    $$('.pcard, tr.row').forEach(c => c.classList.toggle('is-out', !!f && !c.dataset.d.split('|').includes(f)));
     const u = new URL(location.href); f ? u.searchParams.set('d', f) : u.searchParams.delete('d'); history.replaceState(null, '', u);
   };
   fb.addEventListener('click', e => { const b = e.target.closest('button'); if (b) apply(b.dataset.f); });

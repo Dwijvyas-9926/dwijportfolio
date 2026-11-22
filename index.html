@@ -64,6 +64,7 @@
 <body data-page="home">
 <main id="main">
   <section class="hero pre" id="top" aria-labelledby="name">
+    <canvas id="blob" aria-hidden="true"></canvas>
     <h1 class="hero__name" id="name" data-bind="name">Dwij Vyas</h1>
     <figure class="hero__portrait" id="heroPortrait">
       <img src="./assets/portrait-hero.webp" width="1125" height="1231" alt="Dwij Vyas" fetchpriority="high" decoding="async">
@@ -89,7 +90,7 @@
       <div class="intro">
         <p class="statement" id="statement" data-bind="about1"></p>
         <div class="intro__side fade">
-          <p data-bind="about2"></p>
+          <div class="now"><p class="now__h">Currently</p><dl data-bind="now"></dl></div>
           <a class="link" href="./about.html">More about me</a>
         </div>
       </div>
@@ -111,6 +112,7 @@
 <script src="./vendor/lenis/lenis.min.js"></script>
 <script src="./assets/resume-gen.js"></script>
 <script src="./assets/site.js"></script>
+<script src="./assets/blob.js" defer></script>
 <script>
 // Old single-page links (#project/avion) now have their own pages.
 (function () {
@@ -128,7 +130,18 @@ Site.ready(C => {
   bind('location', esc(String(p.location || '').split(',').filter((s, k, a) => k === 0 || k === a.length - 1).join(',')));
   bind('tagline', rich(p.tagline));
   bind('about1', esc(p.about1).split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' '));
-  bind('about2', esc(p.about2));
+  // currently: derived from education and the latest entries
+  const ms = (C.milestones || []).slice().sort((a, b) => String(b.when).localeCompare(String(a.when)));
+  const ed = (C.education || [])[0];
+  const exp = ms.find(m => /experience/i.test(m.kind || ''));
+  const rec = ms.find(m => /recognition/i.test(m.kind || '') && m.emphasis);
+  const nowRows = [
+    ed && ['Studying', `${ed.school.split(' ').map(w => w[0]).join('')}, ${(ed.detail || '').split('·')[0].trim()}`],
+    exp && ['Latest experience', exp.title],
+    rec && ['Latest result', `${rec.emphasis}, ${rec.title}`],
+    p.availability && ['Looking for', p.availability.replace(/^Open to\s*/i, '').replace(/^./, c => c.toUpperCase())],
+  ].filter(Boolean);
+  bind('now', nowRows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join(''));
 
   // marquee: schools from education, organisations from experience & recognition
   const orgs = [];

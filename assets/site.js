@@ -61,6 +61,12 @@
       ((m.note || '').toLowerCase().includes(t) || (m.title || '').toLowerCase().includes(t) || (x.link && m.link === x.link)));
     return m ? `${m.emphasis}, ${m.title}` : '';
   };
+  const milestoneFor = x => {
+    const t = String(x.title || '').toLowerCase();
+    return (C.milestones || []).find(m => t &&
+      ((m.note || '').toLowerCase().includes(t) || (m.title || '').toLowerCase().includes(t) || (x.link && m.link === x.link)));
+  };
+  const yearFor = x => { const m = milestoneFor(x); return m && m.when ? String(m.when).trim() : ''; };
   const projects = () => (C.projects || []).filter(x => x && x.title && x.id);
 
   // project card, used on Home and Work
@@ -273,7 +279,7 @@
   window.Site = {
     ready(fn) { loaded ? fn(C) : waiting.push(fn); },
     $, $$, esc, rich, bind, splitKind, linkLabel, ext, projectUrl, card, projects, resultFor, disciplinesOf, DISCIPLINES,
-    observe, magnetic, lbOpen, reduced, fine, ARROW,
+    observe, magnetic, lbOpen, reduced, fine, ARROW, yearFor,
   };
   loadContent().then(({ c, draft }) => {
     C = c; loaded = true;

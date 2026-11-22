@@ -24,6 +24,12 @@
       "icon": "linkedin"
     },
     {
+      "id": "github",
+      "label": "GitHub",
+      "href": "https://github.com/Dwijvyas-9926",
+      "icon": "github"
+    },
+    {
       "id": "phone",
       "label": "+91 94083 88690",
       "href": "tel:+919408388690",
