@@ -63,19 +63,42 @@ export async function start() {
   const floor = -size.y * s / 2 - 0.95;
   ground.position.y = floor;
 
-  // re-pivot each propeller around its own hub so it spins in place
+  // re-pivot each propeller on its hub: the smallest mesh inside it is the centred hub cap.
+  // A pivot takes the prop's position and orientation; a spinner inside it turns about the prop's own axis.
   const props = [];
   drone.updateMatrixWorld(true);
-  drone.traverse(o => {
-    if (!/^Propeller/i.test(o.name || '')) return;
-    const pb = new THREE.Box3().setFromObject(o);
-    const hubWorld = pb.getCenter(new THREE.Vector3());
+  const found = [];
+  drone.traverse(o => { if (/^propeller/i.test(o.name || '')) found.push(o); });
+  for (const o of found) {
+    let hub = null, best = Infinity;
+    o.traverse(m => {
+      if (!m.isMesh) return;
+      m.geometry.computeBoundingSphere();
+      const r = m.geometry.boundingSphere.radius * m.getWorldScale(new THREE.Vector3()).x;
+      if (r < best) { best = r; hub = m; }
+    });
+    const hubWorld = hub ? hub.localToWorld(hub.geometry.boundingSphere.center.clone()) : o.getWorldPosition(new THREE.Vector3());
     const parent = o.parent;
-    const hubLocal = parent.worldToLocal(hubWorld.clone());
-    const pivot = new THREE.Group(); pivot.position.copy(hubLocal);
-    parent.add(pivot); pivot.attach(o);
-    props.push({ pivot, dir: /left/i.test(o.name) === /front/i.test(o.name) ? 1 : -1 });
-  });
+    const pivot = new THREE.Group();
+    pivot.position.copy(parent.worldToLocal(hubWorld.clone()));
+    const pq = parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+    pivot.quaternion.copy(pq.multiply(o.getWorldQuaternion(new THREE.Quaternion())));
+    const spinner = new THREE.Group();
+    pivot.add(spinner); parent.add(pivot);
+    pivot.updateMatrixWorld(true);
+    spinner.attach(o);
+    props.push({ spinner, hub, dir: /left/i.test(o.name) === /front/i.test(o.name) ? 1 : -1 });
+  }
+  // self-check (open the page with ?uav-check): each hub must stay put while its prop turns
+  if (/uav-check/.test(location.search)) {
+    const drift = props.map(pr => {
+      const c0 = pr.hub.localToWorld(pr.hub.geometry.boundingSphere.center.clone());
+      let max = 0;
+      for (let a = 0; a < 6.28; a += 0.5) { pr.spinner.rotation.y = a; pr.spinner.updateMatrixWorld(true); max = Math.max(max, pr.hub.localToWorld(pr.hub.geometry.boundingSphere.center.clone()).distanceTo(c0)); }
+      pr.spinner.rotation.y = 0; return max;
+    });
+    console.log('[uav-check] hub drift', drift.map(d => d.toExponential(2)).join(' '));
+  }
 
   // parts the annotations point at
   const norm = n => String(n || '').toLowerCase().replace(/[\s_]+/g, ' ').trim();   // the loader turns spaces into underscores
@@ -127,7 +150,7 @@ export async function start() {
     rig.rotation.x = 0.06 + Math.sin(sm(p) * Math.PI) * 0.22 + ptr.y * 0.05;
     rig.rotation.z = -ptr.x * 0.1;                                          // bank toward the cursor
     body.position.y = (1 - lift) * -0.5 + (reduced ? 0 : Math.sin(t * 1.4) * 0.05);
-    for (const pr of props) pr.pivot.rotation.y += pr.dir * (0.02 + 0.5 * spin);
+    for (const pr of props) pr.spinner.rotation.y += pr.dir * (0.02 + 0.5 * spin);
     ground.material.opacity = 0.1 * lift;
 
     renderer.render(scene, camera);
