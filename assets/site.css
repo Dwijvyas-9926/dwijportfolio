@@ -468,3 +468,44 @@ body.is-locked{overflow:hidden}
 .phead--video .crumbs{color:rgba(255,255,255,.6)}
 .phead--video .crumbs a:hover{color:#fff}
 .phead--video .phead__lede{color:rgba(255,255,255,.78)}
+
+/* ── Built to fly: the drone section ───────────────────── */
+.uav{position:relative;height:270vh;margin-top:var(--sect)}
+.uav__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;
+  background:radial-gradient(ellipse 55% 50% at 50% 62%,#FFFFFF 0%,rgba(255,255,255,0) 72%)}
+#uavCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.2s var(--ease)}
+.uav--ready #uavCanvas{opacity:1}
+.uav__head{position:relative;z-index:2;padding-top:clamp(92px,11vh,128px);text-align:center;pointer-events:none}
+.uav__head h2{font:600 clamp(56px,7.4vw,120px)/.88 var(--cond);letter-spacing:-.015em}
+.uav__head .eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:var(--s2)}
+.uav__head .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(240,86,39,.22)}
+.uav__lede{font-size:var(--t-lead);color:var(--ink-2);max-width:30em;margin:var(--s2) auto 0}
+.uav__pin{position:absolute;left:0;top:0;z-index:3;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 4px rgba(240,86,39,.25);opacity:0;transition:opacity .4s;pointer-events:none}
+.uav__pin::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:1.5px solid var(--accent);animation:pin 1.8s var(--ease) infinite}
+@keyframes pin{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+.uav__pin.on{opacity:1}
+.uav__note{position:absolute;left:0;top:0;z-index:3;width:300px;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,.86);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 18px 40px -22px rgba(17,18,20,.35),0 0 0 1px var(--line);
+  opacity:0;transition:opacity .45s var(--ease);pointer-events:none}
+.uav__note.on{opacity:1}
+.uav__note h3{font:600 26px/1 var(--cond)}
+.uav__note p{font-size:var(--t-small);color:var(--ink-2);margin-top:8px;line-height:1.5}
+.uav__foot{position:absolute;left:0;right:0;bottom:clamp(20px,4vh,36px);z-index:3;display:flex;justify-content:space-between;align-items:center;gap:var(--s2);flex-wrap:wrap}
+.uav__cap{font-size:13px;color:var(--ink-2)}
+.uav__links{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:800px){
+  .uav{height:230vh}
+  .uav__note{left:16px;right:16px;top:auto;bottom:96px;width:auto;transform:none!important}
+  .uav__foot{justify-content:center;text-align:center}
+}
+/* still mode: reduced motion, no WebGL, or a lost context */
+.uav--static{height:auto}
+.uav--static .uav__stage{position:relative;height:auto;padding-bottom:var(--s5);display:flex;flex-direction:column}
+.uav--static .uav__head{order:1}.uav--static #uavCanvas{order:2}.uav--static .uav__notes{order:3}.uav--static .uav__foot{order:4}
+.uav--static #uavCanvas{position:relative;height:min(60vh,560px)}
+.uav--static .uav__pin{display:none}
+.uav--static .uav__notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);max-width:var(--max);margin:0 auto;padding:0 var(--gx)}
+.uav--static .uav__note{position:static;width:auto;opacity:1;transform:none!important}
+.uav--static .uav__foot{position:static;margin-top:var(--s4)}
+@media (max-width:800px){.uav--static .uav__notes{grid-template-columns:1fr}}

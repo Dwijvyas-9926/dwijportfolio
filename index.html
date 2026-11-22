@@ -28,6 +28,7 @@
 <link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/portrait-hero.webp" as="image" fetchpriority="high">
 <link rel="preload" href="./fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
 <link rel="stylesheet" href="./vendor/lenis/lenis.css">
 <link rel="stylesheet" href="./assets/site.css">
 <script type="application/ld+json">
@@ -121,6 +122,29 @@
     </div>
   </section>
 
+  <section class="uav" id="uav" aria-labelledby="uav-h">
+    <div class="uav__stage">
+      <canvas id="uavCanvas" aria-hidden="true"></canvas>
+      <div class="uav__head wrap">
+        <p class="eyebrow">Unmanned aerial systems</p>
+        <h2 class="rv" id="uav-h"><span class="line"><span>Built to fly.</span></span></h2>
+        <p class="uav__lede">Drones are where my work comes together: embedded flight control, sensing and autonomy.</p>
+      </div>
+      <span class="uav__pin" data-pin="Canopy" aria-hidden="true"></span>
+      <span class="uav__pin" data-pin="Nose sensors" aria-hidden="true"></span>
+      <span class="uav__pin" data-pin="Propeller front right" aria-hidden="true"></span>
+      <div class="uav__notes">
+        <article class="uav__note" data-note><h3>Flight control</h3><p>Pixhawk autopilots on ArduPilot, tuned and flown in Mission Planner and QGroundControl.</p></article>
+        <article class="uav__note" data-note><h3>Perception</h3><p>Depth and thermal cameras feeding OpenCV to find drop zones and people who need help.</p></article>
+        <article class="uav__note" data-note><h3>Autonomy</h3><p>A Raspberry Pi companion computer flies the mission over MAVLink, with an operator always in command.</p></article>
+      </div>
+      <div class="uav__foot wrap">
+        <p class="uav__cap">AERONEX concept model, rendered live in your browser</p>
+        <div class="uav__links" data-bind="uavLinks"></div>
+      </div>
+    </div>
+  </section>
+
   <section aria-labelledby="vb-h">
     <div class="wrap">
       <div class="vband">
@@ -150,6 +174,18 @@
 <script src="./assets/site.js"></script>
 <script src="./assets/blob.js" defer></script>
 <script src="./assets/scope.js" defer></script>
+<script type="module">
+// the drone scene, its engine and model load only when the section approaches
+const uav = document.getElementById('uav');
+if (uav) {
+  const io = new IntersectionObserver(async ([e]) => {
+    if (!e.isIntersecting) return;
+    io.disconnect();
+    try { (await import('./assets/uav.js')).start(); } catch (err) { uav.classList.add('uav--static'); console.warn('[uav]', err); }
+  }, { rootMargin: '600px 0px' });
+  io.observe(uav);
+}
+</script>
 <script>
 // Old single-page links (#project/avion) now have their own pages.
 (function () {
@@ -211,6 +247,8 @@ Site.ready(C => {
   bind('workMeta', `Three of ${ps.length} projects`);
   bind('featured', ps.slice(0, 3).map((x, k) => card(x, { wide: k === 0 })).join(''));
   bind('allBtn', `View all ${ps.length} projects`);
+  const uavP = ps.filter(x => /avion|terra/i.test(x.title));
+  bind('uavLinks', uavP.map(x => `<a class="btn btn--ghost btn--sm" href="${Site.projectUrl(x.id)}">See ${esc(x.title)}</a>`).join(''));
   bind('vbandLede', esc(`${ps.length} systems so far, each one designed, built and tested by hand.`));
 
   // statement words fill in as you read; the hero has depth on scroll
