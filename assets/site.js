@@ -161,11 +161,16 @@
         <footer class="foot">
           <span data-bind="copyright">© Dwij Vyas</span>
           <span><span data-bind="place"></span> · <span data-clock></span></span>
-          <nav aria-label="Footer"><a href="./">Home</a><a href="./work.html">Work</a><a href="./about.html">About</a></nav>
+          <nav aria-label="Footer"><a href="./">Home</a><a href="./work.html">Work</a><a href="./about.html">About</a><a href="./resume.html">Résumé</a></nav>
+          <span class="foot__tools"><button type="button" data-sound aria-pressed="true">Sound on</button><button type="button" data-keys aria-controls="keys">Keys ?</button><span class="mono">v3 — Nov 2026</span></span>
         </footer>
       </div>
       <p class="wordmark" aria-hidden="true" data-bind="wordmark">Dwij Vyas<span>.</span></p>
-    </section>`;
+    </section>
+    <div class="keys" id="keys" role="dialog" aria-label="Keyboard shortcuts" hidden>
+      <p class="keys__h">Keyboard</p>
+      <dl><div><dt><kbd>H</kbd></dt><dd>Home</dd></div><div><dt><kbd>W</kbd></dt><dd>Work</dd></div><div><dt><kbd>A</kbd></dt><dd>About</dd></div><div><dt><kbd>C</kbd></dt><dd>Contact</dd></div><div><dt><kbd>R</kbd></dt><dd>Résumé</dd></div><div><dt><kbd>?</kbd></dt><dd>This list</dd></div></dl>
+    </div>`;
   }
   function lightbox() {
     return `
@@ -234,7 +239,7 @@
       if (x < 1) requestAnimationFrame(tick);
       else {
         try { sessionStorage.setItem(INTRO_KEY, '1'); } catch (err) {}
-        pre.classList.add('is-done'); document.body.classList.remove('is-pre');
+        pre.classList.add('is-done'); document.body.classList.remove('is-pre'); sfx('land');
         introDone = true; introWait.forEach(f => f()); introWait.length = 0;
         setTimeout(() => pre.remove(), 1200);
       }
@@ -276,6 +281,51 @@
     });
   }
 
+  // the project image you click carries over into the case page's cover (cross-document view transition)
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href*="project.html"]'); if (!a || reduced) return;
+    $$('[style*="view-transition-name"]').forEach(el => el.style.viewTransitionName = '');
+    const img = a.querySelector('img') || (a.dataset.peek && $('.peek.is-on img'));
+    if (img) img.style.viewTransitionName = 'cover';
+  });
+  addEventListener('pagereveal', e => { if (e.viewTransition) document.documentElement.classList.add('vt'); });
+
+  // ── sound: a quiet synthesized click set, off with one switch ──
+  const SFX_KEY = 'dwij.sound';
+  let sfxOn = true; try { sfxOn = localStorage.getItem(SFX_KEY) !== 'off'; } catch (e) {}
+  let sctx = null, gestured = false;
+  ['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => { gestured = true; }, { once: true, passive: true }));
+  function sfx(kind) {
+    if (!sfxOn || reduced || !gestured) return;
+    try {
+      sctx = sctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (sctx.state === 'suspended') sctx.resume();
+      const t = sctx.currentTime, o = sctx.createOscillator(), g = sctx.createGain();
+      const f = { tick: [1800, 0.018], click: [900, 0.035], land: [520, 0.12] }[kind] || [900, 0.03];
+      o.type = kind === 'land' ? 'sine' : 'triangle'; o.frequency.setValueAtTime(f[0], t);
+      o.frequency.exponentialRampToValueAtTime(f[0] * 0.6, t + f[1]);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + f[1]);
+      o.connect(g); g.connect(sctx.destination); o.start(t); o.stop(t + f[1] + 0.02);
+    } catch (e) {}
+  }
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-sound]')) { sfxOn = !sfxOn; try { localStorage.setItem(SFX_KEY, sfxOn ? 'on' : 'off'); } catch (err) {} $$('[data-sound]').forEach(b => { b.setAttribute('aria-pressed', String(sfxOn)); b.textContent = sfxOn ? 'Sound on' : 'Sound off'; }); if (sfxOn) sfx('click'); return; }
+    if (e.target.closest('.seg button, .filters button, .views button')) sfx('tick');
+    else if (e.target.closest('a.btn, .nav a, .row__a, .feat, .pcard, .next__a')) sfx('click');
+  });
+
+  // ── keyboard shortcuts: H W A C, ? for the list ──
+  const KEYS = { h: './', w: './work.html', a: './about.html', c: '#contact', r: './resume.html' };
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
+    const k = e.key.toLowerCase();
+    if (k === '?') { const h = $('#keys'); if (h) { h.hidden = !h.hidden; } return; }
+    if (k === 'escape') { const h = $('#keys'); if (h && !h.hidden) h.hidden = true; return; }
+    if (!KEYS[k] || $('#lb').classList.contains('is-open')) return;
+    if (KEYS[k].startsWith('#')) { const el = $(KEYS[k]); if (el) lenis ? lenis.scrollTo(el, { offset: -24 }) : el.scrollIntoView({ behavior: 'smooth' }); }
+    else location.href = KEYS[k];
+  });
+
   // copy the email address
   document.addEventListener('click', async e => {
     const b = e.target.closest('[data-copy]'); if (!b) return;
@@ -284,6 +334,10 @@
     try { await navigator.clipboard.writeText(addr); b.textContent = 'Copied'; } catch (err) { b.textContent = addr; }
     setTimeout(() => { b.textContent = 'Copy address'; }, 1800);
   });
+
+  document.addEventListener('click', e => { if (e.target.closest('[data-keys]')) { const h = $('#keys'); h.hidden = !h.hidden; } else if (e.target.closest('#keys')) { $('#keys').hidden = true; } });
+  // sound switch reflects the stored choice
+  $$('[data-sound]').forEach(b => { b.setAttribute('aria-pressed', String(sfxOn)); b.textContent = sfxOn ? 'Sound on' : 'Sound off'; });
 
   // header hides on the way down, returns on the way up
   const hdr = $('#hdr'); let lastY = scrollY;
@@ -395,7 +449,7 @@
   let loaded = false;
   window.Site = {
     ready(fn) { loaded ? fn(C) : waiting.push(fn); },
-    $, $$, esc, rich, bind, splitKind, linkLabel, ext, projectUrl, card, row, feature, projects, resultFor, disciplinesOf, DISCIPLINES,
+    $, $$, esc, rich, bind, splitKind, linkLabel, ext, projectUrl, card, row, feature, projects, resultFor, disciplinesOf, DISCIPLINES, sfx,
     observe, magnetic, lbOpen, reduced, fine, ARROW, yearFor, afterIntro, peek,
   };
   loadContent().then(({ c, draft }) => {
@@ -403,6 +457,8 @@
     renderChrome();
     waiting.forEach(fn => { try { fn(C); } catch (e) { console.error(e); } });
     observe(); magnetic(); clocks(); videos(); peek(); onProg();
+    // on touch screens a tap brings a film frame into colour; a second tap follows the link
+    if (!fine) document.addEventListener('click', e => { const f = e.target.closest('.strip__f'); if (f && !f.classList.contains('is-color')) { e.preventDefault(); $$('.strip__f.is-color').forEach(x => x.classList.remove('is-color')); f.classList.add('is-color'); } });
     if (draft) {
       const d = document.createElement('p'); d.className = 'draft';
       d.textContent = 'Showing your unpublished draft from the editor';

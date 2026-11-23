@@ -73,8 +73,12 @@
     <figure class="hero__portrait" id="heroPortrait">
       <img src="./assets/portrait-hero.webp" width="1123" height="1230" alt="Dwij Vyas" fetchpriority="high" decoding="async">
     </figure>
-    <div class="hero__meta hero__meta--l"><p class="mono"><span data-bind="discipline">Electronics &amp; Communication Engineering</span><span data-bind="institution"></span></p></div>
-    <div class="hero__meta hero__meta--r"><p class="mono"><span data-bind="location">Vadodara, India</span><span>22.31° N · 73.18° E</span><span data-clock></span></p></div>
+    <div class="hero__meta hero__meta--l">
+      <dl class="plate"><div><dt class="mono">Discipline</dt><dd data-bind="discipline">Electronics &amp; Communication Engineering</dd></div><div><dt class="mono">Institution</dt><dd data-bind="institution"></dd></div></dl>
+    </div>
+    <div class="hero__meta hero__meta--r">
+      <dl class="plate"><div><dt class="mono">Based in</dt><dd data-bind="location">Vadodara, India</dd></div><div><dt class="mono">Local time</dt><dd><span data-clock></span><span class="plate__sub mono">22.31° N, 73.18° E</span></dd></div></dl>
+    </div>
     <div class="hero__foot" id="heroFoot">
       <p class="hero__lede" data-bind="tagline"></p>
       <div class="hero__cta">

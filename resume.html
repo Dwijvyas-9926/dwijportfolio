@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Résumé — Dwij Vyas</title>
+<meta name="description" content="Résumé of Dwij Vyas, Electronics &amp; Communication Engineering, BVM: education, experience, projects and skills.">
+<meta name="author" content="Dwij Vyas">
+<meta name="theme-color" content="#F3F2EF">
+<link rel="canonical" href="https://dwijportfolio-kappa.vercel.app/resume">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dwijportfolio-kappa.vercel.app/resume">
+<meta property="og:title" content="Résumé — Dwij Vyas">
+<meta property="og:description" content="Résumé of Dwij Vyas, Electronics &amp; Communication Engineering, BVM: education, experience, projects and skills.">
+<meta property="og:image" content="https://dwijportfolio-kappa.vercel.app/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Dwij Vyas — engineering portfolio">
+<meta property="og:site_name" content="Dwij Vyas">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Résumé — Dwij Vyas">
+<meta name="twitter:description" content="Résumé of Dwij Vyas, Electronics &amp; Communication Engineering, BVM: education, experience, projects and skills.">
+<meta name="twitter:image" content="https://dwijportfolio-kappa.vercel.app/og-image.jpg">
+<link rel="apple-touch-icon" href="./assets/avatar.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
+<link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/LiberationMono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="./vendor/lenis/lenis.css">
+<link rel="stylesheet" href="./assets/site.css">
+<!-- ══════════════════════════════════════════════════════════════════
+     CLOUD SYNC — optional. Leave blank and everything works locally.
+     Fill these in to edit from any device and publish instantly.
+     Setup takes about five minutes; see DEPLOY.md.
+     The key below is a *public* anon key by design — your row-level
+     security policy is what protects writes, not this string.
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+  window.PORTFOLIO_CLOUD = {
+    url: "",   // e.g. "https://abcdefgh.supabase.co"
+    key: ""    // the project's anon / publishable key
+  };
+</script>
+</head>
+<body data-page="resume">
+<main id="main">
+  <article class="cv wrap">
+    <header class="cv__head">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><span aria-current="page">Résumé</span></nav>
+      <div class="cv__top">
+        <div>
+          <h1 class="rv" data-bind="name"></h1>
+          <p class="cv__role" data-bind="role"></p>
+        </div>
+        <address class="cv__contact mono" data-bind="contact"></address>
+      </div>
+      <p class="cv__sum" data-bind="about"></p>
+      <div class="cv__actions">
+        <a class="btn btn--primary" data-resume href="./Dwij_Vyas_Resume.pdf" download>Download PDF</a>
+        <button class="btn btn--ghost" type="button" onclick="print()">Print this page</button>
+      </div>
+    </header>
+    <section class="cv__sec" aria-labelledby="cv-edu"><h2 id="cv-edu">Education</h2><div class="cv__rows" data-bind="education"></div></section>
+    <section class="cv__sec" aria-labelledby="cv-exp"><h2 id="cv-exp">Experience</h2><div class="cv__rows" data-bind="experience"></div></section>
+    <section class="cv__sec" aria-labelledby="cv-rec"><h2 id="cv-rec">Recognition</h2><div class="cv__rows" data-bind="recognition"></div></section>
+    <section class="cv__sec" aria-labelledby="cv-pr"><h2 id="cv-pr">Projects</h2><div class="cv__rows" data-bind="projects"></div></section>
+    <section class="cv__sec" aria-labelledby="cv-sk"><h2 id="cv-sk">Skills</h2><div class="cv__rows" data-bind="skills"></div></section>
+  </article>
+</main>
+<script src="./vendor/lenis/lenis.min.js"></script>
+<script src="./assets/site.js"></script>
+<script>
+Site.ready(C => {
+  const { esc, bind, projects, splitKind, resultFor, yearFor, observe, projectUrl } = Site;
+  const p = C.profile || {};
+  bind('name', `<span class="line"><span>${esc(String(p.name || '').trim())}</span></span>`);
+  bind('role', esc([p.discipline, p.institution, p.location].filter(Boolean).join(' — ')));
+  bind('contact', (C.contact || []).map(c => `<a href="${esc(c.href)}">${esc(/^https?:/i.test(c.href) ? c.href.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, '') : c.label)}</a>`).join(''));
+  bind('about', esc([p.about1, p.availability ? p.availability + '.' : ''].filter(Boolean).join(' ')));
+  const rowHtml = (k, t, s, n) => `<div class="cv__row"><span class="mono">${esc(k)}</span><div><h3>${esc(t)}</h3>${s ? `<p class="cv__s">${esc(s)}</p>` : ''}${n ? `<p>${esc(n)}</p>` : ''}</div></div>`;
+  bind('education', (C.education || []).map(e => rowHtml(e.years, e.school, e.detail)).join(''));
+  const ms = (C.milestones || []).slice().sort((a, b) => String(b.when).localeCompare(String(a.when)));
+  bind('experience', ms.filter(m => /experience/i.test(m.kind || '')).map(m => rowHtml(m.when, m.title, m.emphasis, m.note)).join(''));
+  bind('recognition', ms.filter(m => /recognition/i.test(m.kind || '')).map(m => rowHtml(m.when, m.title, m.emphasis, m.note)).join(''));
+  bind('projects', projects().map(x => `<div class="cv__row"><span class="mono">${esc(yearFor(x) || '')}</span><div><h3><a href="${projectUrl(x.id)}">${esc(x.title)}</a> <small>${esc(x.sub)}</small></h3><p>${esc(x.desc)}</p>${(x.tech || []).length ? `<p class="cv__tech mono">${x.tech.map(esc).join(', ')}</p>` : ''}${resultFor(x) ? `<p class="cv__s">${esc(resultFor(x))}</p>` : ''}</div></div>`).join(''));
+  bind('skills', (C.domains || []).filter(d => d.id !== 'all').map(d => `<div class="cv__row"><span class="mono">${esc(d.label)}</span><div><p>${d.skills.map(esc).join(', ')}</p></div></div>`).join(''));
+  document.title = `Résumé — ${String(p.name || '').trim()}`;
+  observe();
+});
+</script>
+</body>
+</html>
