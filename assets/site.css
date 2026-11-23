@@ -347,7 +347,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 
 /* ── contact block (every page) ─────────────────────────── */
 .contact{position:relative;margin-top:var(--sect);color:#fff;padding-top:clamp(96px,12vw,152px);overflow:hidden;
-  background:radial-gradient(900px circle at 100% 70%,rgba(142,221,208,.2) 0%,rgba(142,221,208,.06) 45%,transparent 70%),
+  background:radial-gradient(900px circle at 100% 100%,rgba(142,221,208,.16) 0%,rgba(142,221,208,.05) 45%,transparent 70%),
              radial-gradient(700px circle at 0% 0%,rgba(246,184,200,.09) 0%,transparent 65%),var(--ink)}
 .contact>.wrap,.contact>.wordmark{position:relative;z-index:1}
 .contact__h{font:600 clamp(60px,9vw,150px)/.86 var(--cond);letter-spacing:-.015em;text-align:center}
