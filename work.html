@@ -79,7 +79,7 @@ Site.ready(C => {
   bind('filters', `<button aria-pressed="true" data-f="">All<sup>${ps.length}</sup></button>` +
     present.map(([n, k]) => `<button aria-pressed="false" data-f="${esc(n)}">${esc(n)}<sup>${k}</sup></button>`).join(''));
   bind('rows', ps.map((x, k) => row(x, k + 1)).join(''));
-  bind('grid', ps.map(x => card(x)).join(''));
+  bind('grid', ps.map((x, k) => card(x, { n: k + 1 })).join(''));
   const rows = $('[data-bind="rows"]'), grid = $('[data-bind="grid"]');
   const setView = v => {
     $$('.views button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));

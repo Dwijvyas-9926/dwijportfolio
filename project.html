@@ -133,6 +133,9 @@ Site.ready(C => {
         </a>
       </div>`);
   }
+  // the cover drifts a little as you scroll
+  const cov = $('.case__cover img');
+  if (cov && !Site.reduced) { const px = () => { const r = cov.parentElement.getBoundingClientRect(); const t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height))); cov.style.transform = `translate3d(0,${(-16 * t).toFixed(1)}%,0)`; }; addEventListener('scroll', px, { passive: true }); px(); }
   observe();
 });
 </script>

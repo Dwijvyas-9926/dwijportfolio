@@ -70,14 +70,14 @@
   const projects = () => (C.projects || []).filter(x => x && x.title && x.id);
 
   // project card, used on Home and Work
-  function card(x, { wide = false } = {}) {
+  function card(x, { wide = false, n = 0 } = {}) {
     const im = (x.images || [])[0];
     const cat = splitKind(x.kind)[0] || '';
     const res = resultFor(x);
     const ds = disciplinesOf(x).join('|');
     return `
     <a class="pcard${wide ? ' pcard--wide' : ''} fade" href="${projectUrl(x.id)}" data-d="${esc(ds)}">
-      <div class="pcard__img">${im ? `<img src="${im.src}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async">` : ''}
+      <div class="pcard__img">${n ? `<span class="pcard__n">${String(n).padStart(2, '0')}</span>` : ''}${im ? `<img src="${im.src}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async">` : ''}
         <span class="pcard__go">${ARROW}</span></div>
       <div class="pcard__body">
         ${wide ? `<span class="pcard__cat">${esc(cat)}</span>` : ''}
