@@ -42,6 +42,7 @@
   const splitKind = s => String(s || '').split(/\s*[·|•]\s*|\s+:\s+/).map(x => x.trim()).filter(Boolean);
   const linkLabel = href => !href ? '' : /github\.com/i.test(href) ? 'Source on GitHub' : /drive\.google\.com/i.test(href) ? 'Project files' : 'Open live project';
   const ext = href => /^https?:/i.test(href) ? ' target="_blank" rel="noopener"' : '';
+  const safeHref = h => /^(https?:|mailto:|tel:|\.?\/|#)/i.test(String(h || '')) ? String(h) : '#';
   const projectUrl = id => `./project.html?p=${encodeURIComponent(id)}`;
   const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>';
 
@@ -77,7 +78,7 @@
     const ds = disciplinesOf(x).join('|');
     return `
     <a class="pcard${wide ? ' pcard--wide' : ''} fade" href="${projectUrl(x.id)}" data-d="${esc(ds)}">
-      <div class="pcard__img">${n ? `<span class="pcard__n">${String(n).padStart(2, '0')}</span>` : ''}${im ? `<img src="${im.src}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async">` : ''}
+      <div class="pcard__img">${n ? `<span class="pcard__n">${String(n).padStart(2, '0')}</span>` : ''}${im ? `<img src="${esc(im.src)}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async">` : ''}
         <span class="pcard__go">${ARROW}</span></div>
       <div class="pcard__body">
         ${wide ? `<span class="pcard__cat">${esc(cat)}</span>` : ''}
@@ -97,13 +98,13 @@
     const res = resultFor(x), yr = yearFor(x);
     return `
     <li class="row fade" data-d="${esc(disciplinesOf(x).join('|'))}">
-      <a class="row__a" href="${projectUrl(x.id)}" data-cursor="View" data-peek="${im ? im.src : ''}">
+      <a class="row__a" href="${projectUrl(x.id)}" data-cursor="View" data-peek="${im ? esc(im.src) : ''}">
         <span class="row__n mono">${String(n).padStart(2, '0')}</span>
         <span class="row__t"><span class="row__title">${esc(x.title)}</span><span class="row__s">${esc(x.sub)}</span></span>
         <span class="row__m mono">${esc(cat)}</span>
         <span class="row__y mono">${esc(yr || '')}</span>
         <span class="row__r">${res ? `<span class="mono">${esc(res)}</span>` : ''}<i>${ARROW}</i></span>
-        ${im ? `<span class="row__thumb"><img src="${im.src}" alt="" loading="lazy" decoding="async"></span>` : ''}
+        ${im ? `<span class="row__thumb"><img src="${esc(im.src)}" alt="" loading="lazy" decoding="async"></span>` : ''}
       </a>
     </li>`;
   }
@@ -113,7 +114,7 @@
     const res = resultFor(x), yr = yearFor(x);
     return `
     <a class="feat" href="${projectUrl(x.id)}" data-cursor="View">
-      <span class="feat__img rv"><span class="line"><span>${im ? `<img src="${im.src}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async">` : ''}</span></span></span>
+      <span class="feat__img rv"><span class="line"><span>${im ? `<img src="${esc(im.src)}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async">` : ''}</span></span></span>
       <span class="feat__body">
         <span class="feat__meta mono"><span>01</span><span>${esc(splitKind(x.kind).slice(0, 2).join(' · '))}</span><span>${esc(yr || '')}</span></span>
         <span class="feat__t">${esc(x.title)}</span>
@@ -201,9 +202,9 @@
     bind('wordmark', `${esc(name)}<span>.</span>`);
     const K = { email: 'Email', linkedin: 'LinkedIn', phone: 'Phone', github: 'GitHub' };
     const mail = (C.contact || []).find(c => /^mailto:/i.test(c.href || ''));
-    const mb = $('[data-bind="mailBtn"]'); if (mail && mb) mb.href = mail.href;
+    const mb = $('[data-bind="mailBtn"]'); if (mail && mb) mb.href = safeHref(mail.href);
     bind('clinks', (C.contact || []).map(c => `
-      <a class="clink" href="${esc(c.href)}"${ext(c.href)}>
+      <a class="clink" href="${esc(safeHref(c.href))}"${ext(c.href)}>
         <small>${esc(K[c.id] || K[c.icon] || c.id || '')}</small>
         <span>${esc(/^https?:/i.test(c.href) && /linkedin|github/i.test(c.href) ? c.href.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, '') : c.label)}</span>
       </a>`).join(''));
@@ -220,7 +221,7 @@
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || a.getAttribute('href').length < 2) return;
-    const el = document.querySelector(a.getAttribute('href'));
+    let el = null; try { el = document.querySelector(a.getAttribute('href')); } catch (err) {}
     if (!el) return;
     e.preventDefault();
     if (lenis) lenis.scrollTo(el, { offset: -24 }); else el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
@@ -412,7 +413,7 @@
   function lbShow(i) {
     lbI = (i + lbList.length) % lbList.length;
     const im = lbList[lbI];
-    $('#lbImg').src = im.src; $('#lbImg').alt = im.caption || '';
+    $('#lbImg').src = /^(https?:|\.?\/|data:image\/)/i.test(im.src || '') ? im.src : ''; $('#lbImg').alt = im.caption || '';
     $('#lbCap').textContent = im.caption ? `${im.caption} (${lbI + 1} of ${lbList.length})` : `${lbI + 1} of ${lbList.length}`;
     $$('.lb__nav', lb).forEach(b => b.hidden = lbList.length < 2);
   }
@@ -450,7 +451,7 @@
   window.Site = {
     ready(fn) { loaded ? fn(C) : waiting.push(fn); },
     $, $$, esc, rich, bind, splitKind, linkLabel, ext, projectUrl, card, row, feature, projects, resultFor, disciplinesOf, DISCIPLINES, sfx,
-    observe, magnetic, lbOpen, reduced, fine, ARROW, yearFor, afterIntro, peek,
+    observe, magnetic, lbOpen, reduced, fine, ARROW, yearFor, afterIntro, peek, safeHref,
   };
   loadContent().then(({ c, draft }) => {
     C = c; loaded = true;

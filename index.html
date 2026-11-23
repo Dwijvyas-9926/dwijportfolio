@@ -22,8 +22,10 @@
 <meta name="twitter:title" content="Dwij Vyas — Electronics &amp; Communication Engineer">
 <meta name="twitter:description" content="Dwij Vyas builds hardware-software systems: an autonomous disaster-relief drone, a hybrid drone–tank rescue robot, a 4-bit microprocessor wired from discrete logic, embedded AI devices. Electronics &amp; Communication Engineering, BVM.">
 <meta name="twitter:image" content="https://dwijportfolio-kappa.vercel.app/og-image.jpg">
-<link rel="apple-touch-icon" href="./assets/avatar.webp">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
 <link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/portrait-hero.webp" as="image" fetchpriority="high">
@@ -82,6 +84,7 @@
     </div>
     <div class="hero__foot" id="heroFoot">
       <p class="hero__lede" data-bind="tagline"></p>
+      <p class="hero__mob mono"><span data-bind="discipline-m"></span><span data-bind="institution-m"></span></p>
       <div class="hero__cta">
         <a class="btn btn--primary" href="./work.html" data-magnetic>See the work</a>
         <a class="btn btn--ghost" href="./about.html">About me</a>
@@ -205,7 +208,7 @@ if (sys && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
 // Old single-page links (#project/avion) now have their own pages.
 (function () {
   const m = /^#project\/(.+)$/.exec(location.hash);
-  if (m) location.replace('./project.html?p=' + m[1]);
+  if (m) location.replace('./project.html?p=' + encodeURIComponent(m[1]));
 })();
 Site.ready(C => {
   const { $, $$, esc, rich, bind, row, feature, projects, reduced, fine, yearFor, splitKind } = Site;
@@ -216,6 +219,7 @@ Site.ready(C => {
   bind('name', nameWords.map((w, k) => `<span class="ln">${[...w].map(ch => `<span class="ch" style="--i:${i++}">${esc(ch)}</span>`).join('')}${k === nameWords.length - 1 ? `<span class="ch dot" style="--i:${i++}" aria-hidden="true">.</span>` : ''}</span>`).join(''));
   bind('discipline', esc(p.discipline || ''));
   bind('institution', esc(p.institution || ''));
+  bind('discipline-m', esc(p.discipline || '')); bind('institution-m', esc(p.institution || ''));
   bind('location', esc(String(p.location || '').split(',').filter((s, k, a) => k === 0 || k === a.length - 1).join(',')));
   bind('tagline', rich(p.tagline));
   bind('about1', esc(p.about1).split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' '));
@@ -257,7 +261,7 @@ Site.ready(C => {
   // film strip: one frame per project photo, in order, looped once for the scroll
   const frames = [];
   ps.forEach(x => (x.images || []).slice(0, 3).forEach(im => frames.push({ src: im.src, cap: im.caption || x.title, id: x.id, t: x.title })));
-  const strip = frames.map((f, k) => `<a class="strip__f" href="${Site.projectUrl(f.id)}" aria-label="${esc(f.t)}"><img src="${f.src}" alt="" loading="lazy" decoding="async"><span class="mono">${String(k + 1).padStart(2, '0')}</span></a>`).join('');
+  const strip = frames.map((f, k) => `<a class="strip__f" href="${Site.projectUrl(f.id)}" aria-label="${esc(f.t)}"><img src="${esc(f.src)}" alt="" loading="lazy" decoding="async"><span class="mono">${String(k + 1).padStart(2, '0')}</span></a>`).join('');
   bind('strip', strip);
 
   // statement words fill in as you read; the hero has depth on scroll; the strip glides with it
@@ -277,6 +281,8 @@ Site.ready(C => {
     const q = clamp((innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35));
     const n = Math.round(q * words.length);
     words.forEach((w, k) => w.classList.toggle('on', k < n));
+    const vb = $('.vband .vbg');
+    if (vb && !reduced) { const b = vb.parentElement.getBoundingClientRect(); const t = clamp((innerHeight - b.top) / (innerHeight + b.height)); vb.style.transform = `translate3d(0,${((t - 0.5) * 14).toFixed(1)}%,0)`; }
     if (reel && !reduced) {
       const s = stripSec.getBoundingClientRect();
       const t = clamp((innerHeight - s.top) / (innerHeight + s.height));
