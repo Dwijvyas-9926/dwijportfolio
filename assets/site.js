@@ -90,6 +90,40 @@
     </a>`;
   }
 
+  // editorial index row (home + work list view)
+  function row(x, n) {
+    const im = (x.images || [])[0];
+    const cat = splitKind(x.kind).slice(0, 2).join(' · ');
+    const res = resultFor(x), yr = yearFor(x);
+    return `
+    <li class="row fade" data-d="${esc(disciplinesOf(x).join('|'))}">
+      <a class="row__a" href="${projectUrl(x.id)}" data-cursor="View" data-peek="${im ? im.src : ''}">
+        <span class="row__n mono">${String(n).padStart(2, '0')}</span>
+        <span class="row__t"><span class="row__title">${esc(x.title)}</span><span class="row__s">${esc(x.sub)}</span></span>
+        <span class="row__m mono">${esc(cat)}</span>
+        <span class="row__y mono">${esc(yr || '')}</span>
+        <span class="row__r">${res ? `<span class="mono">${esc(res)}</span>` : ''}<i>${ARROW}</i></span>
+        ${im ? `<span class="row__thumb"><img src="${im.src}" alt="" loading="lazy" decoding="async"></span>` : ''}
+      </a>
+    </li>`;
+  }
+  // the feature: one project, full width, image with a clip reveal
+  function feature(x) {
+    const im = (x.images || [])[0];
+    const res = resultFor(x), yr = yearFor(x);
+    return `
+    <a class="feat" href="${projectUrl(x.id)}" data-cursor="View">
+      <span class="feat__img rv"><span class="line"><span>${im ? `<img src="${im.src}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async">` : ''}</span></span></span>
+      <span class="feat__body">
+        <span class="feat__meta mono"><span>01</span><span>${esc(splitKind(x.kind).slice(0, 2).join(' · '))}</span><span>${esc(yr || '')}</span></span>
+        <span class="feat__t">${esc(x.title)}</span>
+        <span class="feat__s">${esc(x.sub)}</span>
+        ${x.desc ? `<span class="feat__d">${esc(x.desc)}</span>` : ''}
+        ${res ? `<span class="feat__r mono">${esc(res)}</span>` : ''}
+      </span>
+    </a>`;
+  }
+
   // ── shared chrome: header + contact block ───────────────────────────
   function header() {
     const here = { work: 'work', project: 'work', about: 'about' }[page] || '';
@@ -114,11 +148,13 @@
   function contactBlock() {
     return `
     <section class="contact" id="contact" aria-labelledby="contact-h">
+      <video class="vbg contact__v" data-src="./assets/video/assembly.mp4" poster="./assets/video/assembly.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
       <div class="wrap">
         <h2 class="contact__h rv" id="contact-h"><span class="line"><span>Let’s build</span></span><span class="line"><span>something real.</span></span></h2>
         <p class="contact__intro" data-bind="contactIntro"></p>
         <div class="contact__cta">
           <a class="btn btn--accent" data-bind="mailBtn" href="mailto:dwijgvyas@gmail.com">Email me</a>
+          <button class="btn btn--ghost" type="button" data-copy aria-live="polite">Copy address</button>
           <a class="btn btn--ghost" data-resume href="./Dwij_Vyas_Resume.pdf" download>Download résumé</a>
         </div>
         <div class="clinks" data-bind="clinks"></div>
@@ -141,7 +177,11 @@
       <button class="lb__nav lb__next" data-lb="next" aria-label="Next image"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>`;
   }
-  document.body.insertAdjacentHTML('afterbegin', '<a class="skip" href="#main">Skip to content</a>' + header());
+  const INTRO_KEY = 'dwij.intro.v1';
+  let showIntro = false;
+  try { showIntro = !reduced && !sessionStorage.getItem(INTRO_KEY) && page === 'home'; } catch (e) {}
+  const intro = showIntro ? `<div class="pre" id="pre" aria-hidden="true"><p class="pre__n mono"><span id="preN">00</span><span>/100</span></p><p class="pre__w mono">Dwij Vyas — portfolio</p></div>` : '';
+  document.body.insertAdjacentHTML('afterbegin', intro + '<a class="skip" href="#main">Skip to content</a>' + header() + '<div class="grain" aria-hidden="true"></div><div class="prog" aria-hidden="true"><i id="prog"></i></div>' + (fine && !reduced ? '<div class="cur" id="cur" aria-hidden="true"><i></i><span id="curL"></span></div>' : ''));
   const main = $('#main');
   main.insertAdjacentHTML('afterend', contactBlock() + lightbox());
 
@@ -179,6 +219,70 @@
     if (!el) return;
     e.preventDefault();
     if (lenis) lenis.scrollTo(el, { offset: -24 }); else el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+  });
+
+  // the preloader counts to 100 while the hero assets arrive, then lifts
+  const introWait = [];
+  let introDone = !showIntro;
+  function afterIntro(fn) { introDone ? fn() : introWait.push(fn); }
+  if (showIntro) {
+    document.body.classList.add('is-pre');
+    const n = $('#preN'), pre = $('#pre'), t0 = performance.now(), D = 1100;
+    const tick = now => {
+      const x = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - x, 3);
+      n.textContent = String(Math.round(e * 100)).padStart(2, '0');
+      if (x < 1) requestAnimationFrame(tick);
+      else {
+        try { sessionStorage.setItem(INTRO_KEY, '1'); } catch (err) {}
+        pre.classList.add('is-done'); document.body.classList.remove('is-pre');
+        introDone = true; introWait.forEach(f => f()); introWait.length = 0;
+        setTimeout(() => pre.remove(), 1200);
+      }
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // reading progress hairline
+  const prog = $('#prog');
+  const onProg = () => { const h = document.documentElement; const m = h.scrollHeight - innerHeight; prog.style.transform = `scaleX(${m > 0 ? (scrollY / m).toFixed(4) : 0})`; };
+  addEventListener('scroll', onProg, { passive: true }); addEventListener('resize', onProg);
+
+  // cursor: a dot that grows into a label over links that ask for one
+  const cur = $('#cur');
+  if (cur) {
+    const lab = $('#curL'); let cx = 0, cy = 0, tx = 0, ty = 0, shown = false;
+    addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; if (!shown) { shown = true; cx = tx; cy = ty; cur.classList.add('is-on'); } }, { passive: true });
+    document.addEventListener('pointerover', e => { const a = e.target.closest('[data-cursor]'); if (a) { lab.textContent = a.dataset.cursor; cur.classList.add('is-label'); } });
+    document.addEventListener('pointerout', e => { if (e.target.closest('[data-cursor]') && !(e.relatedTarget && e.relatedTarget.closest('[data-cursor]'))) cur.classList.remove('is-label'); });
+    document.addEventListener('mouseleave', () => cur.classList.remove('is-on'));
+    document.addEventListener('mouseenter', () => cur.classList.add('is-on'));
+    const run = () => { cx += (tx - cx) * 0.22; cy += (ty - cy) * 0.22; cur.style.transform = `translate3d(${cx.toFixed(1)}px,${cy.toFixed(1)}px,0)`; requestAnimationFrame(run); };
+    requestAnimationFrame(run);
+  }
+
+  // hover preview that follows the pointer over the index rows
+  function peek(root = document) {
+    if (!fine || reduced) return;
+    $$('.rows', root).forEach(list => {
+      if (list.dataset.peek) return; list.dataset.peek = '1';
+      const pk = document.createElement('div'); pk.className = 'peek'; pk.innerHTML = '<img alt="">';
+      list.appendChild(pk);
+      const img = pk.firstChild; let px = 0, py = 0, tx = 0, ty = 0, on = false;
+      list.addEventListener('pointerover', e => { const a = e.target.closest('[data-peek]'); if (a && a.dataset.peek) { if (img.src !== a.dataset.peek) img.src = a.dataset.peek; on = true; pk.classList.add('is-on'); } });
+      list.addEventListener('pointerleave', () => { on = false; pk.classList.remove('is-on'); });
+      list.addEventListener('pointermove', e => { const r = list.getBoundingClientRect(); tx = e.clientX - r.left; ty = e.clientY - r.top; }, { passive: true });
+      const run = () => { if (on) { px += (tx - px) * 0.12; py += (ty - py) * 0.12; pk.style.transform = `translate3d(${px.toFixed(1)}px,${py.toFixed(1)}px,0) rotate(${((tx - px) * 0.04).toFixed(2)}deg)`; } requestAnimationFrame(run); };
+      requestAnimationFrame(run);
+    });
+  }
+
+  // copy the email address
+  document.addEventListener('click', async e => {
+    const b = e.target.closest('[data-copy]'); if (!b) return;
+    const mail = (C && C.contact || []).find(c => /^mailto:/i.test(c.href || ''));
+    const addr = mail ? mail.href.replace(/^mailto:/i, '') : 'dwijgvyas@gmail.com';
+    try { await navigator.clipboard.writeText(addr); b.textContent = 'Copied'; } catch (err) { b.textContent = addr; }
+    setTimeout(() => { b.textContent = 'Copy address'; }, 1800);
   });
 
   // header hides on the way down, returns on the way up
@@ -291,14 +395,14 @@
   let loaded = false;
   window.Site = {
     ready(fn) { loaded ? fn(C) : waiting.push(fn); },
-    $, $$, esc, rich, bind, splitKind, linkLabel, ext, projectUrl, card, projects, resultFor, disciplinesOf, DISCIPLINES,
-    observe, magnetic, lbOpen, reduced, fine, ARROW, yearFor,
+    $, $$, esc, rich, bind, splitKind, linkLabel, ext, projectUrl, card, row, feature, projects, resultFor, disciplinesOf, DISCIPLINES,
+    observe, magnetic, lbOpen, reduced, fine, ARROW, yearFor, afterIntro, peek,
   };
   loadContent().then(({ c, draft }) => {
     C = c; loaded = true;
     renderChrome();
     waiting.forEach(fn => { try { fn(C); } catch (e) { console.error(e); } });
-    observe(); magnetic(); clocks(); videos();
+    observe(); magnetic(); clocks(); videos(); peek(); onProg();
     if (draft) {
       const d = document.createElement('p'); d.className = 'draft';
       d.textContent = 'Showing your unpublished draft from the editor';

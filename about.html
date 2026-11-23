@@ -26,6 +26,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
 <link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/LiberationMono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/portrait-hero.webp" as="image">
 <link rel="stylesheet" href="./vendor/lenis/lenis.css">
 <link rel="stylesheet" href="./assets/site.css">
@@ -87,7 +88,7 @@
   <section class="sect" aria-labelledby="edu-h">
     <div class="wrap">
       <div class="shead"><h2 class="rv" id="edu-h"><span class="line"><span>Education</span></span></h2></div>
-      <div class="ecards" data-bind="education"></div>
+      <ol class="edu" data-bind="education"></ol>
     </div>
   </section>
 
@@ -101,7 +102,7 @@
   <section class="sect" aria-labelledby="sk-h">
     <div class="wrap">
       <div class="skpanel">
-        <div class="shead"><h2 class="rv" id="sk-h"><span class="line"><span>Skills</span></span></h2><p data-bind="skillsMeta"></p></div>
+        <div class="shead"><h2 class="rv" id="sk-h"><span class="line"><span>Skills</span></span></h2><p class="mono" data-bind="skillsMeta"></p></div>
         <div class="skgrid" data-bind="skills"></div>
       </div>
     </div>
@@ -126,15 +127,15 @@ Site.ready(C => {
     const si = parts.findIndex(s => /CPI|%|GPA|CGPA/i.test(s));
     const score = si > -1 ? parts.splice(si, 1)[0] : '';
     const m = /([\d.]+)\s*(\/\s*\d+|%)?/.exec(score);
-    return `<article class="ecard fade"><p class="ecard__yr">${esc(e.years)}</p><h3>${esc(e.school)}</h3><p>${parts.map(esc).join('<br>')}</p>
-      ${m ? `<div class="ecard__score"><b>${esc(m[1])}${m[2] === '%' ? '%' : ''}</b><span>${esc(/CPI/i.test(score) ? 'CPI' + (m[2] && m[2] !== '%' ? ' ' + m[2].replace(/\s/g, '') : '') : 'Score')}</span></div>` : ''}</article>`;
+    return `<li class="edu__row fade"><span class="edu__yr mono">${esc(e.years)}</span><span class="edu__body"><h3>${esc(e.school)}</h3><p>${parts.map(esc).join('<br>')}</p></span>
+      ${m ? `<span class="edu__score"><b>${esc(m[1])}${m[2] === '%' ? '%' : ''}</b><span class="mono">${esc(/CPI/i.test(score) ? 'CPI' + (m[2] && m[2] !== '%' ? ' ' + m[2].replace(/\s/g, '') : '') : 'Score')}</span></span>` : ''}</li>`;
   }).join(''));
 
   // experience & recognition: a trace with solder-pad nodes
   const ms = (C.milestones || []).slice();
   const years = [...new Set(ms.map(m => String(m.when || '').trim()))].sort((a, b) => b.localeCompare(a));
   bind('record', years.map(y => `
-    <div class="tl__year fade"><p class="tl__k">${esc(y || '—')}</p><div>
+    <div class="tl__year fade"><p class="tl__k">${esc(y || '')}</p><div>
       ${ms.filter(m => String(m.when || '').trim() === y).map(m => `
         <article class="entry">
           <div class="entry__top"><span class="pill pill--${esc(String(m.kind || '').toLowerCase())}">${esc(m.kind)}</span>${m.emphasis ? `<span class="pill pill--em">${esc(m.emphasis)}</span>` : ''}</div>
@@ -167,7 +168,7 @@ Site.ready(C => {
   const doms = (C.domains || []).filter(d => d.id !== 'all' && (d.skills || []).length);
   bind('skillsMeta', all ? `${all.skills.length} tools and disciplines across ${doms.length} areas` : '');
   bind('skills', doms.map((d, i) => `<article class="skcard fade${doms.length % 3 === 2 && i === doms.length - 1 ? ' skcard--wide' : ''}">${wave(WAVES[d.id] || 'sine')}
-    <h3>${esc(d.label)}<small>${d.skills.length}</small></h3><ul>${d.skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul></article>`).join(''));
+    <h3>${esc(d.label)}<small class="mono">${d.skills.length}</small></h3><ul>${d.skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul></article>`).join(''));
   observe();
 });
 </script>

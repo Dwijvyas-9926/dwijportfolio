@@ -26,6 +26,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
 <link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/LiberationMono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="./vendor/lenis/lenis.css">
 <link rel="stylesheet" href="./assets/site.css">
 <!-- ══════════════════════════════════════════════════════════════════
@@ -59,11 +60,11 @@
       <div class="toolbar">
         <div class="filters" role="group" aria-label="Filter by discipline" data-bind="filters"></div>
         <div class="views" role="group" aria-label="View">
-          <button aria-pressed="true" data-v="grid">Grid</button><button aria-pressed="false" data-v="index">Index</button>
+          <button aria-pressed="true" data-v="list">List</button><button aria-pressed="false" data-v="grid">Grid</button>
         </div>
       </div>
-      <div class="pgrid" data-bind="grid"></div>
-      <table class="index" data-bind="index" hidden></table>
+      <ol class="rows" data-bind="rows"></ol>
+      <div class="pgrid" data-bind="grid" hidden></div>
     </div>
   </section>
 </main>
@@ -71,38 +72,35 @@
 <script src="./assets/site.js"></script>
 <script>
 Site.ready(C => {
-  const { $, $$, esc, bind, card, projects, disciplinesOf, DISCIPLINES, observe, splitKind, resultFor, yearFor, projectUrl } = Site;
+  const { $, $$, esc, bind, card, row, projects, disciplinesOf, DISCIPLINES, observe, peek } = Site;
   const ps = projects();
   const present = DISCIPLINES.map(([n]) => [n, ps.filter(p => disciplinesOf(p).includes(n)).length]).filter(([, k]) => k);
-  bind('lede', esc(`${ps.length} projects, each taken from an idea to a working prototype. Filter by discipline, or select a project for the full case study.`));
+  bind('lede', esc(`${ps.length} projects, each taken from an idea to a working prototype. Filter by discipline, or open a project for the full case study.`));
   bind('filters', `<button aria-pressed="true" data-f="">All<sup>${ps.length}</sup></button>` +
     present.map(([n, k]) => `<button aria-pressed="false" data-f="${esc(n)}">${esc(n)}<sup>${k}</sup></button>`).join(''));
+  bind('rows', ps.map((x, k) => row(x, k + 1)).join(''));
   bind('grid', ps.map(x => card(x)).join(''));
-  bind('index', `<thead><tr><th scope="col">Project</th><th scope="col" class="hide-s">Discipline</th><th scope="col">Year</th><th scope="col" class="hide-s">Result</th></tr></thead><tbody>` +
-    ps.map(x => `<tr class="row" data-d="${esc(disciplinesOf(x).join('|'))}" data-href="${projectUrl(x.id)}">
-      <td>${(x.images || [])[0] ? `<img src="${x.images[0].src}" alt="" loading="lazy">` : ''}<span><a href="${projectUrl(x.id)}">${esc(x.title)}</a><small>${esc(x.sub)}</small></span></td>
-      <td class="hide-s">${esc(splitKind(x.kind).slice(0, 2).join(', '))}</td>
-      <td class="yr">${esc(yearFor(x) || '—')}</td>
-      <td class="hide-s">${esc(resultFor(x) || '—')}</td></tr>`).join('') + '</tbody>');
-  $('[data-bind="index"]').addEventListener('click', e => { const r = e.target.closest('tr.row'); if (r && !e.target.closest('a')) location.href = r.dataset.href; });
-  const grid = $('[data-bind="grid"]'), table = $('[data-bind="index"]');
+  const rows = $('[data-bind="rows"]'), grid = $('[data-bind="grid"]');
   const setView = v => {
     $$('.views button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
-    grid.hidden = v === 'index'; table.hidden = v !== 'index';
-    const u = new URL(location.href); v === 'index' ? u.searchParams.set('view', 'index') : u.searchParams.delete('view'); history.replaceState(null, '', u);
+    rows.hidden = v === 'grid'; grid.hidden = v !== 'grid';
+    const u = new URL(location.href); v === 'grid' ? u.searchParams.set('view', 'grid') : u.searchParams.delete('view'); history.replaceState(null, '', u);
+    observe();
   };
   $('.views').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setView(b.dataset.v); });
-  if (new URLSearchParams(location.search).get('view') === 'index') setView('index');
+  if (new URLSearchParams(location.search).get('view') === 'grid') setView('grid');
   const fb = $('[data-bind="filters"]');
   const apply = f => {
     $$('button', fb).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === f)));
-    $$('.pcard, tr.row').forEach(c => c.classList.toggle('is-out', !!f && !c.dataset.d.split('|').includes(f)));
+    $$('.pcard, .row').forEach(c => c.classList.toggle('is-out', !!f && !c.dataset.d.split('|').includes(f)));
+    // renumber the visible rows
+    let n = 0; $$('.row', rows).forEach(r => { if (!r.classList.contains('is-out')) r.querySelector('.row__n').textContent = String(++n).padStart(2, '0'); });
     const u = new URL(location.href); f ? u.searchParams.set('d', f) : u.searchParams.delete('d'); history.replaceState(null, '', u);
   };
   fb.addEventListener('click', e => { const b = e.target.closest('button'); if (b) apply(b.dataset.f); });
   const start = new URLSearchParams(location.search).get('d');
   if (start && present.some(([n]) => n === start)) apply(start);
-  observe();
+  observe(); peek();
 });
 </script>
 </body>

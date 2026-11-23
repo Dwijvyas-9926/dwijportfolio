@@ -26,6 +26,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 9h5.5a7 7 0 0 1 0 14H9z' fill='none' stroke='%23F3F2EF' stroke-width='2.4'/%3E%3Ccircle cx='23' cy='10' r='2.6' fill='%23F05627'/%3E%3C/svg%3E">
 <link rel="preload" href="./fonts/BarlowCondensed-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/LiberationMono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="./vendor/lenis/lenis.css">
 <link rel="stylesheet" href="./assets/site.css">
 <!-- ══════════════════════════════════════════════════════════════════
@@ -45,9 +46,10 @@
 <body data-page="project">
 <main id="main">
   <article id="case">
-    <header class="phead">
+    <header class="phead phead--case" id="caseHead">
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><a href="./work.html">Work</a><span aria-hidden="true">/</span><span aria-current="page" data-bind="crumb"></span></nav>
+        <p class="case__n mono" data-bind="num"></p>
         <div class="case__head">
           <div>
             <h1 class="rv" data-bind="title"></h1>
@@ -67,7 +69,9 @@
         <aside aria-label="Project details"><dl class="spec" data-bind="spec"></dl></aside>
       </div>
       <section class="case__gallery" data-bind="gallery" aria-labelledby="gal-h"></section>
-      <nav class="pager" data-bind="pager" aria-label="More projects"></nav>
+    </div>
+    <nav class="next" data-bind="pager" aria-label="More projects"></nav>
+    <div class="wrap">
     </div>
   </article>
 </main>
@@ -96,6 +100,8 @@ Site.ready(C => {
   setMeta('meta[name="twitter:title"]', 'content', `${x.title} — Dwij Vyas`);
   setMeta('meta[name="twitter:description"]', 'content', desc);
   bind('crumb', esc(x.title));
+  bind('num', `${String(i + 1).padStart(2, '0')} / ${String(ps.length).padStart(2, '0')}`);
+  if (x.accent) $('#caseHead').style.setProperty('--pa', x.accent);
   bind('title', `<span class="line"><span>${esc(x.title)}</span></span>`);
   bind('sub', esc(x.sub));
   const yr = yearFor(x);
@@ -118,9 +124,14 @@ Site.ready(C => {
   document.addEventListener('click', e => { const b = e.target.closest('#case [data-i]'); if (b) lbOpen(imgs, +b.dataset.i); });
   if (ps.length > 1) {
     const prev = ps[(i - 1 + ps.length) % ps.length], next = ps[(i + 1) % ps.length];
-    const pi = p => (p.images || [])[0] ? `<img src="${p.images[0].src}" alt="" loading="lazy">` : '<img alt="">';
-    bind('pager', `<a href="${projectUrl(prev.id)}">${pi(prev)}<span><small>Previous project</small><span>${esc(prev.title)}</span></span></a>
-      <a href="${projectUrl(next.id)}"><span><small>Next project</small><span>${esc(next.title)}</span></span>${pi(next)}</a>`);
+    const ni = (next.images || [])[0];
+    bind('pager', `<div class="wrap next__in">
+        <a class="next__prev link" href="${projectUrl(prev.id)}">Previous: ${esc(prev.title)}</a>
+        <a class="next__a" href="${projectUrl(next.id)}" data-cursor="View">
+          <span class="next__img">${ni ? `<img src="${ni.src}" alt="" loading="lazy" decoding="async">` : ''}</span>
+          <span class="next__body"><span class="mono">Next project ${String((i + 1) % ps.length + 1).padStart(2, '0')}</span><span class="next__t">${esc(next.title)}</span><span class="next__s">${esc(next.sub)}</span></span>
+        </a>
+      </div>`);
   }
   observe();
 });

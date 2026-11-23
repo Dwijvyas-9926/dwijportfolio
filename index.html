@@ -28,7 +28,7 @@
 <link rel="preload" href="./fonts/Barlow-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/portrait-hero.webp" as="image" fetchpriority="high">
 <link rel="preload" href="./fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
-<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
+<link rel="preload" href="./fonts/LiberationMono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="./vendor/lenis/lenis.css">
 <link rel="stylesheet" href="./assets/site.css">
 <script type="application/ld+json">
@@ -73,8 +73,8 @@
     <figure class="hero__portrait" id="heroPortrait">
       <img src="./assets/portrait-hero.webp" width="1123" height="1230" alt="Dwij Vyas" fetchpriority="high" decoding="async">
     </figure>
-    <div class="hero__meta hero__meta--l"><p><b data-bind="discipline">Electronics &amp; Communication Engineering</b><span data-bind="institution"></span></p></div>
-    <div class="hero__meta hero__meta--r"><p><b data-bind="location">Vadodara, India</b><span><span data-clock></span> local time</span></p></div>
+    <div class="hero__meta hero__meta--l"><p class="mono"><span data-bind="discipline">Electronics &amp; Communication Engineering</span><span data-bind="institution"></span></p></div>
+    <div class="hero__meta hero__meta--r"><p class="mono"><span data-bind="location">Vadodara, India</span><span>22.31° N · 73.18° E</span><span data-clock></span></p></div>
     <div class="hero__foot" id="heroFoot">
       <p class="hero__lede" data-bind="tagline"></p>
       <div class="hero__cta">
@@ -82,11 +82,13 @@
         <a class="btn btn--ghost" href="./about.html">About me</a>
       </div>
     </div>
+    <p class="hero__scroll mono" aria-hidden="true"><span>Scroll</span><i></i></p>
   </section>
 
-  <section class="marquee" aria-label="Where I have studied, worked and competed">
-    <p class="marquee__label">Where I’ve studied, worked and competed</p>
-    <div class="marquee__row"><div class="marquee__track" data-bind="marquee"></div></div>
+  <section class="sheet" aria-label="Key figures">
+    <div class="wrap">
+      <dl class="sheet__row" data-bind="stats"></dl>
+    </div>
   </section>
 
   <section class="sect" aria-label="Introduction">
@@ -94,22 +96,26 @@
       <div class="intro">
         <p class="statement" id="statement" data-bind="about1"></p>
         <div class="intro__side fade">
-          <div class="now"><p class="now__h">Currently</p><dl data-bind="now"></dl></div>
+          <dl class="now mono" data-bind="now"></dl>
           <a class="link" href="./about.html">More about me</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="sect" aria-labelledby="lab-h">
+    <div class="wrap">
       <div class="panel" data-lab>
         <div class="lab">
           <div class="lab__side">
-            <p class="lab__k">Signal lab</p>
-            <h2 class="lab__t">A working modulator</h2>
+            <h2 class="lab__t" id="lab-h">A working modulator</h2>
             <p class="lab__d">Communication engineering on one screen. Pick a scheme and tune it: CH2 is the message, CH1 is the signal that would leave the antenna.</p>
             <div class="seg" role="group" aria-label="Modulation scheme">
               <button data-mod="am" aria-pressed="true">AM</button><button data-mod="fm" aria-pressed="false">FM</button><button data-mod="psk" aria-pressed="false">PSK</button>
             </div>
             <label class="ctl"><span>Carrier</span><input type="range" data-ctl="fc" min="6" max="26" step="0.5" value="12"></label>
             <label class="ctl"><span>Depth</span><input type="range" data-ctl="depth" min="0.1" max="1" step="0.05" value="0.6"></label>
-            <dl class="lab__read">
+            <dl class="lab__read mono">
               <div><dt>Carrier</dt><dd data-out="fc">12.0 kHz</dd></div>
               <div><dt>Index</dt><dd data-out="idx">μ = 0.60</dd></div>
               <div><dt>Bandwidth</dt><dd data-out="bw">3.2 kHz</dd></div>
@@ -117,55 +123,50 @@
           </div>
           <canvas class="lab__scope" data-scope data-mod="am" data-fc="12" data-depth="0.6" data-top="24" role="img" aria-label="Oscilloscope: the message signal and the modulated carrier"></canvas>
         </div>
-        <div class="stats" data-bind="stats"></div>
       </div>
     </div>
   </section>
 
-  <section class="uav" id="uav" aria-labelledby="uav-h">
-    <div class="uav__stage">
-      <canvas id="uavCanvas" aria-hidden="true"></canvas>
-      <div class="uav__head wrap">
-        <p class="eyebrow">Unmanned aerial systems</p>
-        <h2 class="rv" id="uav-h"><span class="line"><span>Built to fly.</span></span></h2>
-        <p class="uav__lede">Drones are where my work comes together: embedded flight control, sensing and autonomy.</p>
-      </div>
-      <span class="uav__pin" data-pin="Canopy" aria-hidden="true"></span>
-      <span class="uav__pin" data-pin="Nose sensors" aria-hidden="true"></span>
-      <span class="uav__pin" data-pin="Propeller front right" aria-hidden="true"></span>
-      <div class="uav__notes">
-        <article class="uav__note" data-note><h3>Flight control</h3><p>Pixhawk autopilots on ArduPilot, tuned and flown in Mission Planner and QGroundControl.</p></article>
-        <article class="uav__note" data-note><h3>Perception</h3><p>Depth and thermal cameras feeding OpenCV to find drop zones and people who need help.</p></article>
-        <article class="uav__note" data-note><h3>Autonomy</h3><p>A Raspberry Pi companion computer flies the mission over MAVLink, with an operator always in command.</p></article>
-      </div>
-      <div class="uav__foot wrap">
-        <p class="uav__cap">AERONEX concept model, rendered live in your browser</p>
-        <div class="uav__links" data-bind="uavLinks"></div>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="vb-h">
-    <div class="wrap">
-      <div class="vband">
-        <!-- Footage: Mixkit, free licence (mixkit.co/license) -->
-        <video class="vbg" data-src="./assets/video/circuit.mp4" poster="./assets/video/circuit.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
-        <div class="vband__in">
-          <h2 class="rv" id="vb-h"><span class="line"><span>From schematic to</span></span><span class="line"><span>working hardware.</span></span></h2>
-          <p data-bind="vbandLede">Every project here was designed, built and tested by hand.</p>
-          <a class="btn btn--light" href="./work.html" data-magnetic>See all work</a>
+  <section class="sys" id="sys" aria-labelledby="sys-h">
+    <div class="sys__stage">
+      <div class="wrap sys__in">
+        <div class="sys__text">
+          <h2 class="rv" id="sys-h"><span class="line"><span>How a system</span></span><span class="line"><span>comes together.</span></span></h2>
+          <p class="sys__lede">AVION, block by block. Scroll to follow a mission from the camera to the drop.</p>
+          <ol class="sys__notes">
+            <li class="sys__note" data-note><span class="mono">01 · Perception</span><h3>See the drop zone</h3><p>A RealSense depth camera and a thermal camera feed OpenCV on the Raspberry Pi, which finds colour-marked zones and people who need help.</p></li>
+            <li class="sys__note" data-note><span class="mono">02 · Flight control</span><h3>Hold the aircraft</h3><p>The Pixhawk runs ArduPilot's attitude loop from GPS and IMU, drives four ESCs at 400 Hz and opens the payload hook on command.</p></li>
+            <li class="sys__note" data-note><span class="mono">03 · Autonomy</span><h3>Fly the mission</h3><p>The Pi flies waypoints over MAVLink while telemetry and video stream to a browser ground station with a live 3D twin. An operator stays in command of every drop.</p></li>
+          </ol>
+          <div class="sys__links" data-bind="uavLinks"></div>
         </div>
+        <div class="sys__diagram" data-diagram></div>
       </div>
     </div>
+  </section>
+
+  <section class="vband" aria-labelledby="vb-h">
+    <!-- Footage: Mixkit, free licence (mixkit.co/license) -->
+    <video class="vbg" data-src="./assets/video/circuit.mp4" poster="./assets/video/circuit.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
+    <div class="wrap vband__in">
+      <h2 class="rv" id="vb-h"><span class="line"><span>From schematic to</span></span><span class="line"><span>working hardware.</span></span></h2>
+      <p data-bind="vbandLede">Every project here was designed, built and tested by hand.</p>
+      <a class="btn btn--light" href="./work.html" data-magnetic>See all work</a>
+    </div>
+  </section>
+
+  <section class="strip" aria-label="Project photographs">
+    <div class="strip__reel" data-bind="strip"></div>
   </section>
 
   <section class="sect" aria-labelledby="work-h">
     <div class="wrap">
       <div class="shead">
         <h2 class="rv" id="work-h"><span class="line"><span>Selected work</span></span></h2>
-        <p data-bind="workMeta"></p>
+        <p class="mono" data-bind="workMeta"></p>
       </div>
-      <div class="pgrid" data-bind="featured"></div>
+      <div data-bind="feature"></div>
+      <ol class="rows" data-bind="rows"></ol>
       <div class="more"><a class="btn btn--primary" href="./work.html" data-bind="allBtn" data-magnetic>View all projects</a></div>
     </div>
   </section>
@@ -174,18 +175,7 @@
 <script src="./assets/site.js"></script>
 <script src="./assets/blob.js" defer></script>
 <script src="./assets/scope.js" defer></script>
-<script type="module">
-// the drone scene, its engine and model load only when the section approaches
-const uav = document.getElementById('uav');
-if (uav) {
-  const io = new IntersectionObserver(async ([e]) => {
-    if (!e.isIntersecting) return;
-    io.disconnect();
-    try { (await import('./assets/uav.js')).start(); } catch (err) { uav.classList.add('uav--static'); console.warn('[uav]', err); }
-  }, { rootMargin: '600px 0px' });
-  io.observe(uav);
-}
-</script>
+<script src="./assets/system.js" defer></script>
 <script>
 // Old single-page links (#project/avion) now have their own pages.
 (function () {
@@ -193,7 +183,7 @@ if (uav) {
   if (m) location.replace('./project.html?p=' + m[1]);
 })();
 Site.ready(C => {
-  const { $, $$, esc, rich, bind, card, projects, reduced, fine } = Site;
+  const { $, $$, esc, rich, bind, row, feature, projects, reduced, fine, yearFor, splitKind } = Site;
   const p = C.profile || {};
   const name = String(p.name || '').trim();
   let i = 0;
@@ -211,48 +201,43 @@ Site.ready(C => {
   const rec = ms.find(m => /recognition/i.test(m.kind || '') && m.emphasis);
   const nowRows = [
     ed && ['Studying', `${ed.school.split(' ').map(w => w[0]).join('')}, ${(ed.detail || '').split('·')[0].trim()}`],
-    exp && ['Latest experience', exp.title],
-    rec && ['Latest result', `${rec.emphasis}, ${rec.title}`],
-    p.availability && ['Looking for', p.availability.replace(/^Open to\s*/i, '').replace(/^./, c => c.toUpperCase())],
+    exp && ['Latest', exp.title],
+    rec && ['Result', `${rec.emphasis}, ${rec.title}`],
+    p.availability && ['Open to', p.availability.replace(/^Open to\s*/i, '').replace(/^./, c => c.toUpperCase())],
   ].filter(Boolean);
-  bind('now', nowRows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join(''));
+  bind('now', `<div class="now__h"><dt>Status</dt><dd><i></i>Currently</dd></div>` + nowRows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join(''));
 
-  // marquee: schools from education, organisations from experience & recognition
-  const orgs = [];
-  (C.education || []).forEach(e => e.school && orgs.push(e.school));
-  (C.milestones || []).forEach(m => {
-    let t = String(m.title || '');
-    t = t.includes('—') ? t.split('—').pop() : t;
-    t = t.replace(/\b(hackathon|\d+(\.\d+)?)\b/gi, '').replace(/\s{2,}/g, ' ').trim();
-    if (t && !orgs.some(o => o.toLowerCase() === t.toLowerCase())) orgs.push(t);
-  });
-  const run = orgs.map(o => `<span>${esc(o)}</span>`).join('');
-  bind('marquee', run + run.replace(/<span>/g, '<span aria-hidden="true">'));
-
-  // numbers, all derived from content
-  const edu = (C.education || [])[0];
-  const cpi = edu && /CPI\s*([\d.]+)\s*\/\s*(\d+)/i.exec(edu.detail || '');
+  // key figures, all derived from content
+  const cpi = ed && /CPI\s*([\d.]+)\s*\/\s*(\d+)/i.exec(ed.detail || '');
   const finals = (C.milestones || []).filter(m => /finalist/i.test(m.emphasis || '')).length;
   const all = (C.domains || []).find(d => d.id === 'all');
   const ps = projects();
   const stats = [
-    cpi && [cpi[1], `CPI out of ${cpi[2]}, ${edu.school}`, 2],
-    [ps.length, 'Systems built, from discrete logic to flight', 0],
-    finals && [finals, `State robotics ${finals === 1 ? 'final' : 'finals'} reached`, 0],
-    all && [all.skills.length, 'Tools, languages and disciplines', 0],
+    cpi && [cpi[1], `CPI / ${cpi[2]}`, ed.school, 2],
+    [ps.length, 'Systems built', 'from discrete logic to flight', 0],
+    finals && [finals, `State ${finals === 1 ? 'final' : 'finals'}`, 'Robofest Gujarat', 0],
+    all && [all.skills.length, 'Tools & languages', 'across five disciplines', 0],
   ].filter(Boolean);
-  bind('stats', stats.map(([v, l, d]) => `<div class="stat"><b data-count="${esc(v)}" data-dec="${d}">${esc(v)}</b><span>${esc(l)}</span></div>`).join(''));
+  bind('stats', stats.map(([v, l, d, dec], k) => `<div class="sheet__cell fade" style="--d:${k * 80}ms"><dt class="mono">${esc(l)}</dt><dd><b data-count="${esc(v)}" data-dec="${dec}">${esc(v)}</b><span>${esc(d)}</span></dd></div>`).join(''));
 
-  // three selected projects: one wide, two beside each other
-  bind('workMeta', `Three of ${ps.length} projects`);
-  bind('featured', ps.slice(0, 3).map((x, k) => card(x, { wide: k === 0 })).join(''));
+  // selected work: a feature, then an index of the rest
+  bind('workMeta', `${ps.length} projects · 2024 — ${new Date().getFullYear()}`);
+  bind('feature', ps[0] ? feature(ps[0]) : '');
+  bind('rows', ps.slice(1, 5).map((x, k) => row(x, k + 2)).join(''));
   bind('allBtn', `View all ${ps.length} projects`);
   const uavP = ps.filter(x => /avion|terra/i.test(x.title));
-  bind('uavLinks', uavP.map(x => `<a class="btn btn--ghost btn--sm" href="${Site.projectUrl(x.id)}">See ${esc(x.title)}</a>`).join(''));
+  bind('uavLinks', uavP.map(x => `<a class="btn btn--ghost btn--sm" href="${Site.projectUrl(x.id)}">${esc(x.title)} case study</a>`).join(''));
   bind('vbandLede', esc(`${ps.length} systems so far, each one designed, built and tested by hand.`));
 
-  // statement words fill in as you read; the hero has depth on scroll
+  // film strip: one frame per project photo, in order, looped once for the scroll
+  const frames = [];
+  ps.forEach(x => (x.images || []).slice(0, 3).forEach(im => frames.push({ src: im.src, cap: im.caption || x.title, id: x.id, t: x.title })));
+  const strip = frames.map((f, k) => `<a class="strip__f" href="${Site.projectUrl(f.id)}" aria-label="${esc(f.t)}"><img src="${f.src}" alt="" loading="lazy" decoding="async"><span class="mono">${String(k + 1).padStart(2, '0')}</span></a>`).join('');
+  bind('strip', strip);
+
+  // statement words fill in as you read; the hero has depth on scroll; the strip glides with it
   const stage = $('#top'), heroName = $('#name'), heroImg = $('#heroPortrait'), heroFoot = $('#heroFoot'), st = $('#statement');
+  const reel = $('.strip__reel'), stripSec = $('.strip');
   const words = $$('.w', st);
   const hp = { x: 0, tx: 0 };
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -267,8 +252,15 @@ Site.ready(C => {
     const q = clamp((innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35));
     const n = Math.round(q * words.length);
     words.forEach((w, k) => w.classList.toggle('on', k < n));
+    if (reel && !reduced) {
+      const s = stripSec.getBoundingClientRect();
+      const t = clamp((innerHeight - s.top) / (innerHeight + s.height));
+      const max = Math.max(0, reel.scrollWidth - innerWidth);
+      reel.style.transform = `translate3d(${(-t * max).toFixed(1)}px,0,0)`;
+    }
   }
   addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
   if (fine && !reduced) {
     stage.addEventListener('pointermove', e => { hp.tx = (e.clientX / innerWidth) * 2 - 1; });
     stage.addEventListener('pointerleave', () => { hp.tx = 0; });
@@ -276,7 +268,7 @@ Site.ready(C => {
     requestAnimationFrame(drift);
   }
   onScroll();
-  requestAnimationFrame(() => requestAnimationFrame(() => { stage.classList.remove('pre'); stage.classList.add('go'); }));
+  Site.afterIntro(() => { stage.classList.remove('pre'); stage.classList.add('go'); });
 });
 </script>
 </body>
