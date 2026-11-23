@@ -81,7 +81,7 @@ export async function start(canvas, section) {
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, degraded ? 1 : 1.75));
     renderer.setSize(W, H, false);
     camera.aspect = W / H; camera.fov = W < 700 ? 34 : 26;
-    camera.position.set(0, 2.2, W < 700 ? 10.5 : 8.8); camera.lookAt(0, 0.3, 0);
+    camera.position.set(0, 2.4, W < 700 ? 11.5 : 10.2); camera.lookAt(0, 0.2, 0);
     camera.updateProjectionMatrix();
     if (!running) render(performance.now());
   }

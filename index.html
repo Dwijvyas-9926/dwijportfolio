@@ -140,7 +140,7 @@
       <div class="wrap sys__in">
         <div class="sys__text">
           <h2 class="rv" id="sys-h"><span class="line"><span>How a system</span></span><span class="line"><span>comes together.</span></span></h2>
-          <p class="sys__lede">AVION, block by block. Scroll to follow a mission from the camera to the drop.</p>
+          <p class="sys__lede">AVION, part by part. Scroll to follow a mission from the camera to the drop.</p>
           <ol class="sys__notes">
             <li class="sys__note" data-note><span class="mono">01 · Perception</span><h3>See the drop zone</h3><p>A RealSense depth camera and a thermal camera feed OpenCV on the Raspberry Pi, which finds colour-marked zones and people who need help.</p></li>
             <li class="sys__note" data-note><span class="mono">02 · Flight control</span><h3>Hold the aircraft</h3><p>The Pixhawk runs ArduPilot's attitude loop from GPS and IMU, drives four ESCs at 400 Hz and opens the payload hook on command.</p></li>
@@ -148,10 +148,10 @@
           </ol>
           <div class="sys__links" data-bind="uavLinks"></div>
         </div>
-        <div class="sys__right">
-          <div class="sys__scene"><canvas id="droneCanvas" aria-hidden="true"></canvas><p class="sys__cap mono">AERONEX airframe, rendered live</p></div>
-          <div class="sys__diagram" data-diagram></div>
+        <div class="sys__scene">
+          <canvas id="droneCanvas" aria-hidden="true"></canvas>
           <svg class="sys__leads" aria-hidden="true"></svg>
+          <p class="sys__cap mono">AERONEX airframe, rendered live</p>
         </div>
       </div>
     </div>
