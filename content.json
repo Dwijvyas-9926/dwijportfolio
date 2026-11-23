@@ -8,7 +8,8 @@
     "tagline": "I build <strong>hardware and the software that runs it</strong> — rescue drones, a breadboard microprocessor, embedded AI — and take each one from idea to working prototype.",
     "about1": "I'm an Electronics & Communication Engineering undergraduate at BVM. I design the board, write the firmware and build the software that ties them together — then fly, drive or run the result.",
     "about2": "I'm looking for an internship where this kind of work happens on a real team, with real deadlines.",
-    "availability": "Open to internships in embedded systems, robotics and AI-driven hardware"
+    "availability": "Open to internships in embedded systems, robotics and AI-driven hardware",
+    "featured": "avion"
   },
   "contact": [
     {

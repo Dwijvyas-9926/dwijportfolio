@@ -251,8 +251,11 @@ Site.ready(C => {
 
   // selected work: a feature, then an index of the rest
   bind('workMeta', `${ps.length} projects · 2024 — ${new Date().getFullYear()}`);
-  bind('feature', ps[0] ? feature(ps[0]) : '');
-  bind('rows', ps.slice(1, 5).map((x, k) => row(x, k + 2)).join(''));
+  // the featured project (chosen in the editor) leads; the rest follow in their order
+  const feat = ps.find(x => x.id === p.featured) || ps[0];
+  const rest = ps.filter(x => x !== feat);
+  bind('feature', feat ? feature(feat) : '');
+  bind('rows', rest.slice(0, 4).map((x, k) => row(x, k + 2)).join(''));
   bind('allBtn', `View all ${ps.length} projects`);
   const uavP = ps.filter(x => /avion|terra/i.test(x.title));
   bind('uavLinks', uavP.map(x => `<a class="btn btn--ghost btn--sm" href="${Site.projectUrl(x.id)}">${esc(x.title)} case study</a>`).join(''));
