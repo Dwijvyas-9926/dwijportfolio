@@ -140,7 +140,7 @@
           <a href="#contact">Contact</a>
         </nav>
         <span class="status" data-bind="status">Open to internships</span>
-        <a class="btn btn--primary btn--sm" data-resume href="./Dwij_Vyas_Resume.pdf" download>Résumé</a>
+        <a class="btn btn--primary btn--sm" href="./resume.html"${page === 'resume' ? ' aria-current="page"' : ''}>Résumé</a>
         <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">Menu</button>
       </div>
     </header>`;
@@ -155,7 +155,7 @@
         <div class="contact__cta">
           <a class="btn btn--accent" data-bind="mailBtn" href="mailto:dwijgvyas@gmail.com">Email me</a>
           <button class="btn btn--ghost" type="button" data-copy aria-live="polite">Copy address</button>
-          <a class="btn btn--ghost" data-resume href="./Dwij_Vyas_Resume.pdf" download>Download résumé</a>
+          <a class="btn btn--ghost" href="./resume.html">See my résumé</a>
         </div>
         <div class="clinks" data-bind="clinks"></div>
         <footer class="foot">

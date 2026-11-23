@@ -29,6 +29,7 @@
 <link rel="preload" href="./assets/portrait-hero.webp" as="image" fetchpriority="high">
 <link rel="preload" href="./fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./fonts/LiberationMono-400.woff2" as="font" type="font/woff2" crossorigin>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
 <link rel="stylesheet" href="./vendor/lenis/lenis.css">
 <link rel="stylesheet" href="./assets/site.css">
 <script type="application/ld+json">
@@ -147,7 +148,11 @@
           </ol>
           <div class="sys__links" data-bind="uavLinks"></div>
         </div>
-        <div class="sys__diagram" data-diagram></div>
+        <div class="sys__right">
+          <div class="sys__scene"><canvas id="droneCanvas" aria-hidden="true"></canvas><p class="sys__cap mono">AERONEX airframe, rendered live</p></div>
+          <div class="sys__diagram" data-diagram></div>
+          <svg class="sys__leads" aria-hidden="true"></svg>
+        </div>
       </div>
     </div>
   </section>
@@ -183,6 +188,19 @@
 <script src="./assets/blob.js" defer></script>
 <script src="./assets/scope.js" defer></script>
 <script src="./assets/system.js" defer></script>
+<script type="module">
+// the aircraft, its engine and model load only when the section approaches
+const sys = document.getElementById('sys');
+if (sys && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const io = new IntersectionObserver(async ([e]) => {
+    if (!e.isIntersecting) return;
+    io.disconnect();
+    try { const m = await import('./assets/drone.js'); window.SysDrone = await m.start(document.getElementById('droneCanvas'), sys); sys.dispatchEvent(new Event('drone:ready')); }
+    catch (err) { sys.classList.add('sys--nodrone'); console.warn('[drone]', err); }
+  }, { rootMargin: '800px 0px' });
+  io.observe(sys);
+} else if (sys) sys.classList.add('sys--nodrone');
+</script>
 <script>
 // Old single-page links (#project/avion) now have their own pages.
 (function () {

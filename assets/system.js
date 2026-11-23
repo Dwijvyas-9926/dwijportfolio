@@ -61,14 +61,50 @@
     return { path, len, dots, speed, ch, g, offs: [0, 0.5] };
   });
   const partEls = parts.map(([id, x, y, w, h, title, sub, ch]) => {
-    const g = el('g', { class: 'sys__part', 'data-ch': ch.join(' '), transform: `translate(${x} ${y})` });
-    el('rect', { width: w, height: h, rx: 10 }, g);
+    const g = el('g', { class: 'sys__part', 'data-ch': ch.join(' '), 'data-id': id, transform: `translate(${x} ${y})` });
+    const rect = el('rect', { width: w, height: h, rx: 10 }, g);
     const t1 = el('text', { x: 18, y: 34, class: 'sys__t' }, g); t1.textContent = title;
     const t2 = el('text', { x: 18, y: 58, class: 'sys__s' }, g); t2.textContent = sub;
     el('circle', { cx: w - 18, cy: 18, r: 3.5, class: 'sys__led' }, g);
-    return { g, ch };
+    return { g, ch, id, rect, w };
   });
   host.appendChild(svg);
+
+  // ── leaders: from each lit block to its part on the aircraft ──
+  const right = sec.querySelector('.sys__right'), leads = sec.querySelector('.sys__leads');
+  const LEAD = { 0: ['cam', 'th', 'pi'], 1: ['gps', 'esc', 'srv', 'px'], 2: ['pi', 'px', 'gps'] };
+  const NAMES = { cam: 'Nose sensors', th: 'Camera gimbal', gps: 'GPS mast', bat: 'Battery bay', pi: 'Companion computer', px: 'Autopilot', esc: 'Motor + ESC', srv: 'Payload hook' };
+  const leadEls = {};
+  const canvas = sec.querySelector('#droneCanvas');
+  function drawLeads() {
+    const dr = window.SysDrone; if (!dr || !leads || !right) return;
+    const keys = active >= 0 ? LEAD[active] : [];
+    const rr = right.getBoundingClientRect(), cr = canvas.getBoundingClientRect();
+    leads.setAttribute('viewBox', `0 0 ${rr.width} ${rr.height}`);
+    for (const k in leadEls) if (!keys.includes(k)) leadEls[k].g.classList.remove('is-on');
+    keys.forEach((k, i) => {
+      const p = dr.project(k); const part = partEls.find(x => x.id === k); if (!p || !part) return;
+      const br = part.rect.getBoundingClientRect();
+      const bx = br.left + br.width / 2 - rr.left, by = br.top - rr.top;
+      const px = cr.left - rr.left + p.x, py = cr.top - rr.top + p.y;
+      let L = leadEls[k];
+      if (!L) {
+        const g = el('g', { class: 'sys__lead' }, leads);
+        L = leadEls[k] = { g, path: el('path', { fill: 'none' }, g), tag: el('path', { fill: 'none', class: 'sys__tag' }, g), dot: el('circle', { r: 3.5 }, g), ring: el('circle', { r: 9, class: 'sys__ring' }, g), t: el('text', { class: 'sys__lt' }, g) };
+      }
+      const my = by - 18 - i * 6;
+      L.path.setAttribute('d', `M${bx.toFixed(1)},${by.toFixed(1)} V${my.toFixed(1)} L${px.toFixed(1)},${py.toFixed(1)}`);
+      L.dot.setAttribute('cx', px); L.dot.setAttribute('cy', py); L.ring.setAttribute('cx', px); L.ring.setAttribute('cy', py);
+      // label: a short tag leading away from the part, alternating sides, stepped so neighbours never collide
+      const side = (i % 2 ? -1 : 1) * (px > rr.width * 0.72 ? -1 : 1);
+      const lx = px + side * (48 + i * 14), ly = py - 30 - i * 22;
+      L.tag.setAttribute('d', `M${px.toFixed(1)},${py.toFixed(1)} L${lx.toFixed(1)},${ly.toFixed(1)} h${(side * 8).toFixed(1)}`);
+      L.t.setAttribute('x', lx + side * 12); L.t.setAttribute('y', ly + 4); L.t.setAttribute('text-anchor', side > 0 ? 'start' : 'end');
+      L.t.textContent = NAMES[k] || '';
+      L.g.classList.add('is-on');
+    });
+  }
+  sec.addEventListener('drone:ready', () => { if (window.SysDrone) window.SysDrone.setChapter(active); });
 
   // ── chapters ──
   let active = -1;
@@ -78,12 +114,14 @@
     linkEls.forEach(l => l.g.classList.toggle('is-on', i < 0 || l.ch.includes(i)));
     notes.forEach((n, k) => n.classList.toggle('is-on', i < 0 || k === i));
     sec.dataset.chapter = i < 0 ? 'all' : String(i);
+    if (window.SysDrone) window.SysDrone.setChapter(i);
   }
 
   // ── packets ──
   let running = false, visible = false, last = 0;
   function frame(now) {
     const dt = Math.min(50, now - (last || now)) / 1000; last = now;
+    drawLeads();
     for (const l of linkEls) {
       const on = active < 0 || l.ch.includes(active);
       for (let k = 0; k < 2; k++) {
