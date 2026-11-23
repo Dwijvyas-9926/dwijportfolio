@@ -130,6 +130,43 @@
           "src": "./assets/img/avion-5.webp",
           "caption": "In-house printable parts: frame joints, payload hook and avionics mounts"
         }
+      ],
+      "chapters": [
+        {
+          "title": "The problem",
+          "text": "After a flood or a landslide, the people who need help most are the ones a road can no longer reach. AVION is a quadcopter that carries a medikit or a food parcel to a marked drop zone, finds the zone itself and releases the parcel — while an operator on the ground stays in command of every drop.",
+          "image": 1
+        },
+        {
+          "title": "Airframe",
+          "text": "The frame is carbon-fibre tube joined by parts we printed in-house: frame joints, the avionics mounts and the payload hook. Printing our own parts meant a broken joint on the field was a reprint away, not a reorder.",
+          "image": 5
+        },
+        {
+          "title": "Flight stack",
+          "text": "A Pixhawk 2.4.8 running ArduPilot holds the aircraft. A Raspberry Pi 4 sits beside it as the companion computer and flies the mission over MAVLink with DroneKit — take-off, waypoints, search, drop and return.",
+          "image": null
+        },
+        {
+          "title": "Perception and the drop",
+          "text": "An Intel RealSense D455 gives the Pi depth and colour. OpenCV finds the colour-marked drop zone, the Pi centres the aircraft over it and descends, and a servo hook lets the parcel go.",
+          "image": null
+        },
+        {
+          "title": "Ground station",
+          "text": "A browser ground station — Flask and Socket.IO behind it, a Three.js digital twin in front — shows the operator the aircraft's attitude and position live, walks them through an operator-checked parcel reload, and runs the whole mission in a browser-based simulator before anything flies.",
+          "image": 3
+        },
+        {
+          "title": "Rehearsal",
+          "text": "Every mission was flown in the simulator first: the same ground station, the same waypoints, a virtual aircraft. It caught the mistakes that would have cost an airframe.",
+          "image": 4
+        },
+        {
+          "title": "Result",
+          "text": "AVION reached the finals of ROBOFEST Gujarat 6.0, India's biggest robotics hackathon, organised by GUJCOST at RAC Bhavnagar. The ground station has since grown into AERONEX, a standalone station for ArduPilot aircraft.",
+          "image": 2
+        }
       ]
     },
     {

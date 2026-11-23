@@ -68,6 +68,7 @@
         </section>
         <aside aria-label="Project details"><dl class="spec" data-bind="spec"></dl></aside>
       </div>
+      <section class="chapters" data-bind="chapters" aria-label="Case study"></section>
       <section class="case__gallery" data-bind="gallery" aria-labelledby="gal-h"></section>
     </div>
     <nav class="next" data-bind="pager" aria-label="More projects"></nav>
@@ -116,9 +117,20 @@ Site.ready(C => {
     res && `<div><dt>Result</dt><dd>${esc(res)}</dd></div>`,
     x.link && `<div><dt>Link</dt><dd><a class="btn btn--primary" href="${esc(x.link)}"${ext(x.link)}>${linkLabel(x.link)}</a></dd></div>`,
   ].filter(Boolean).join(''));
-  const rest = imgs.slice(1);
-  const gal = bind('gallery', rest.length ? `<h2 id="gal-h">Gallery</h2><div class="gal">${rest.map((im, k) => `
-    <figure class="fade"><button data-i="${k + 1}" aria-label="Enlarge image ${k + 2}"><img src="${im.src}" alt="${esc(im.caption || x.title + ', image ' + (k + 2))}" loading="lazy" decoding="async"></button>
+  // chapters: an optional sequence in content.json; images they use leave the gallery
+  const ch = Array.isArray(x.chapters) ? x.chapters.filter(c => c && c.title) : [];
+  const used = new Set();
+  const chEl = bind('chapters', ch.map((c, k) => {
+    const im = c.image ? imgs[c.image - 1] : null; if (im) used.add(c.image - 1);
+    return `<article class="chap fade${im ? '' : ' chap--text'}">
+      <div class="chap__text"><p class="mono">${String(k + 1).padStart(2, '0')} / ${String(ch.length).padStart(2, '0')}</p><h2>${esc(c.title)}</h2><p class="chap__p">${esc(c.text)}</p></div>
+      ${im ? `<figure class="chap__fig"><button data-i="${c.image - 1}" aria-label="Enlarge image: ${esc(im.caption || x.title)}"><img src="${im.src}" alt="${esc(im.caption || x.title)}" loading="lazy" decoding="async"></button>${im.caption ? `<figcaption>${esc(im.caption)}</figcaption>` : ''}</figure>` : ''}
+    </article>`;
+  }).join(''));
+  if (!ch.length && chEl) chEl.hidden = true;
+  const rest = imgs.slice(1).filter((im, k) => !used.has(k + 1));
+  const gal = bind('gallery', rest.length ? `<h2 id="gal-h">${ch.length ? 'More photographs' : 'Gallery'}</h2><div class="gal">${rest.map((im, k) => `
+    <figure class="fade"><button data-i="${imgs.indexOf(im)}" aria-label="Enlarge image ${imgs.indexOf(im) + 1}"><img src="${im.src}" alt="${esc(im.caption || x.title + ', image ' + (imgs.indexOf(im) + 1))}" loading="lazy" decoding="async"></button>
     ${im.caption ? `<figcaption>${esc(im.caption)}</figcaption>` : ''}</figure>`).join('')}</div>` : '');
   if (!rest.length && gal) gal.hidden = true;
   document.addEventListener('click', e => { const b = e.target.closest('#case [data-i]'); if (b) lbOpen(imgs, +b.dataset.i); });

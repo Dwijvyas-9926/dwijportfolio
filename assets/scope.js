@@ -122,15 +122,56 @@
   function lab(root) {
     const cv = root.querySelector('canvas[data-scope]');
     const out = k => root.querySelector(`[data-out="${k}"]`);
+
+    // listen: the same equations, rendered to a two-second loop you can hear.
+    // The carrier is scaled into the audible range (6–26 "kHz" on screen → 300–900 Hz).
+    const BITS = [1, 0, 1, 1, 0, 0, 1, 0];
+    let actx = null, src = null, gain = null, playing = false;
+    const btn = root.querySelector('[data-listen]');
+    function render() {
+      const sr = actx.sampleRate, N = sr * 2, buf = actx.createBuffer(1, N, sr), d = buf.getChannelData(0);
+      const mod = cv.dataset.mod || 'am', fc = 300 + (((+cv.dataset.fc || 12) - 6) / 20) * 600, mu = +cv.dataset.depth || 0.6;
+      const fm = 55, bitRate = 10;
+      for (let i = 0; i < N; i++) {
+        const t = i / sr, bit = BITS[Math.floor(t * bitRate) % 8];
+        const m = Math.sin(2 * Math.PI * fm * t);
+        let v;
+        if (mod === 'fm') v = Math.cos(2 * Math.PI * fc * t + mu * 6 * Math.sin(2 * Math.PI * fm * t));
+        else if (mod === 'psk') v = Math.cos(2 * Math.PI * fc * t + (bit ? 0 : Math.PI));
+        else v = (1 + mu * m) / (1 + mu) * Math.cos(2 * Math.PI * fc * t);
+        // short fades at the loop seam
+        const e = Math.min(1, i / 400, (N - i) / 400);
+        d[i] = v * e;
+      }
+      return buf;
+    }
+    function play() {
+      if (src) { try { src.stop(); } catch (e) {} src.disconnect(); }
+      src = actx.createBufferSource(); src.buffer = render(); src.loop = true;
+      src.connect(gain); src.start();
+    }
+    function setListen(on) {
+      playing = on;
+      if (btn) { btn.setAttribute('aria-pressed', String(on)); btn.textContent = on ? 'Mute' : 'Listen'; }
+      if (on) {
+        if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); gain = actx.createGain(); gain.gain.value = 0.12; gain.connect(actx.destination); }
+        if (actx.state === 'suspended') actx.resume();
+        play();
+      } else if (src) { try { src.stop(); } catch (e) {} src.disconnect(); src = null; }
+    }
+    if (btn) btn.addEventListener('click', () => setListen(!playing));
+    let rerender = 0;
+    const refresh = () => { if (!playing) return; clearTimeout(rerender); rerender = setTimeout(play, 160); };
+    document.addEventListener('visibilitychange', () => { if (document.hidden && playing) setListen(false); });
     root.querySelectorAll('[data-mod]').forEach(b => b.addEventListener('click', () => {
       cv.dataset.mod = b.dataset.mod;
       root.querySelectorAll('[data-mod]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
       const depth = root.querySelector('[data-ctl="depth"]');
       if (depth) depth.closest('label').hidden = b.dataset.mod === 'psk';
-      cv.redraw && cv.redraw();
+      cv.redraw && cv.redraw(); refresh();
     }));
     root.querySelectorAll('input[data-ctl]').forEach(inp => {
-      const set = () => { cv.dataset[inp.dataset.ctl] = inp.value; cv.redraw && cv.redraw(); };
+      const set = () => { cv.dataset[inp.dataset.ctl] = inp.value; cv.redraw && cv.redraw(); refresh(); };
       inp.addEventListener('input', set); set();
     });
     cv.addEventListener('scope:measure', e => {

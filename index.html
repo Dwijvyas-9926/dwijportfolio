@@ -109,9 +109,12 @@
         <div class="lab">
           <div class="lab__side">
             <h2 class="lab__t" id="lab-h">A working modulator</h2>
-            <p class="lab__d">Communication engineering on one screen. Pick a scheme and tune it: CH2 is the message, CH1 is the signal that would leave the antenna.</p>
-            <div class="seg" role="group" aria-label="Modulation scheme">
-              <button data-mod="am" aria-pressed="true">AM</button><button data-mod="fm" aria-pressed="false">FM</button><button data-mod="psk" aria-pressed="false">PSK</button>
+            <p class="lab__d">Communication engineering on one screen. Pick a scheme and tune it: CH2 is the message, CH1 is the signal that would leave the antenna. Press Listen to hear the carrier, scaled into the audible range.</p>
+            <div class="lab__ctls">
+              <div class="seg" role="group" aria-label="Modulation scheme">
+                <button data-mod="am" aria-pressed="true">AM</button><button data-mod="fm" aria-pressed="false">FM</button><button data-mod="psk" aria-pressed="false">PSK</button>
+              </div>
+              <button class="listen" type="button" data-listen aria-pressed="false">Listen</button>
             </div>
             <label class="ctl"><span>Carrier</span><input type="range" data-ctl="fc" min="6" max="26" step="0.5" value="12"></label>
             <label class="ctl"><span>Depth</span><input type="range" data-ctl="depth" min="0.1" max="1" step="0.05" value="0.6"></label>
